@@ -7,14 +7,15 @@ import 'package:recipe_finder_app/core/const/local.dart';
 import 'package:recipe_finder_app/data/repo/recipe.dart';
 import 'package:recipe_finder_app/data/source/local/hive.dart';
 import 'package:recipe_finder_app/data/source/remote/api.dart';
+import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> setupDI() async {
-  // Initialize Hive
+  // init hive
   await Hive.initFlutter();
 
-  // Open Hive boxes
+  // open boxes
   await Hive.openBox(LocalConst.cache);
   await Hive.openBox(LocalConst.favs);
   await Hive.openBox(LocalConst.categories);
@@ -63,5 +64,10 @@ Future<void> setupDI() async {
       hive: getIt<HiveService>(),
       logger: getIt<Logger>(),
     ),
+  );
+
+  // BLoC
+  getIt.registerFactory<RecipeListBloc>(
+    () => RecipeListBloc(repo: getIt<RecipeRepo>()),
   );
 }
