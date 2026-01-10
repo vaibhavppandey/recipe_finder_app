@@ -4,6 +4,7 @@ class ApiConst {
   static const String byName = '/search.php';
   static const String byID = '/lookup.php';
   static const String list = '/list.php';
+  static const String categories = '/categories.php';
   static const String search = 's';
   static const String id = 'i';
   static const String c = 'c';

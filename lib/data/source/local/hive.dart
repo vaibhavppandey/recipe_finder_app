@@ -7,19 +7,21 @@ import 'package:recipe_finder_app/data/model/recipe.dart';
 class HiveService {
   Future<void> cacheRecipe(Recipe recipe) async {
     final box = Hive.box(LocalConst.cache);
-    await box.put(recipe.id, recipe);
+    await box.put(recipe.id, recipe.toJson());
   }
 
   Future<void> cacheRecipeIfNeeded(Recipe recipe) async {
     final box = Hive.box(LocalConst.cache);
     if (!box.containsKey(recipe.id)) {
-      await box.put(recipe.id, recipe);
+      await box.put(recipe.id, recipe.toJson());
     }
   }
 
   Recipe? getCachedRecipe(String id) {
     final box = Hive.box(LocalConst.cache);
-    return box.get(id) as Recipe?;
+    final data = box.get(id);
+    if (data == null) return null;
+    return Recipe.fromJson(data as Map<String, dynamic>);
   }
 
   bool isRecipeCached(String id) {
@@ -29,7 +31,9 @@ class HiveService {
 
   List<Recipe> getAllCachedRecipes() {
     final box = Hive.box(LocalConst.cache);
-    return box.values.cast<Recipe>().toList();
+    return box.values
+        .map((json) => Recipe.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 
   Future<void> clearRecipeCache() async {
@@ -39,7 +43,7 @@ class HiveService {
 
   Future<void> addToFavorites(Recipe recipe) async {
     final box = Hive.box(LocalConst.favs);
-    await box.put(recipe.id, recipe);
+    await box.put(recipe.id, recipe.toJson());
   }
 
   Future<void> removeFromFavorites(String recipeId) async {
@@ -63,7 +67,9 @@ class HiveService {
 
   List<Recipe> getAllFavorites() {
     final box = Hive.box(LocalConst.favs);
-    return box.values.cast<Recipe>().toList();
+    return box.values
+        .map((json) => Recipe.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 
   Future<void> clearFavorites() async {
@@ -82,7 +88,9 @@ class HiveService {
     final data = box.get(LocalConst.data);
     if (data == null) return null;
     return (data as List)
-        .map((json) => Category.fromJson(json as Map<String, dynamic>))
+        .map(
+          (json) => Category.fromJson(Map<String, dynamic>.from(json as Map)),
+        )
         .toList();
   }
 
@@ -102,7 +110,7 @@ class HiveService {
     final data = box.get(LocalConst.data);
     if (data == null) return null;
     return (data as List)
-        .map((json) => Area.fromJson(json as Map<String, dynamic>))
+        .map((json) => Area.fromJson(Map<String, dynamic>.from(json as Map)))
         .toList();
   }
 

@@ -12,46 +12,14 @@ class RecipeRepo {
   final Logger logger;
 
   List<Recipe> _recipes = [];
-  String? _selectedCategory;
-  String? _selectedArea;
+  List<Category> _categories = [];
+  List<Area> _areas = [];
 
   RecipeRepo({required this.api, required this.hive, required this.logger});
 
-  List<Recipe> get recipes => _getFilteredRecipes();
-
-  String? get selectedCategory => _selectedCategory;
-  String? get selectedArea => _selectedArea;
-
-  List<Recipe> _getFilteredRecipes() {
-    var filtered = _recipes;
-
-    if (_selectedCategory != null) {
-      filtered = filtered
-          .where((recipe) => recipe.category == _selectedCategory)
-          .toList();
-    }
-
-    if (_selectedArea != null) {
-      filtered = filtered
-          .where((recipe) => recipe.area == _selectedArea)
-          .toList();
-    }
-
-    return filtered;
-  }
-
-  void setCategory(String? category) {
-    _selectedCategory = category;
-  }
-
-  void setArea(String? area) {
-    _selectedArea = area;
-  }
-
-  void clearFilters() {
-    _selectedCategory = null;
-    _selectedArea = null;
-  }
+  List<Recipe> get recipes => _recipes;
+  List<Category> get categories => _categories;
+  List<Area> get areas => _areas;
 
   Future<List<Recipe>> searchMealByName(String query) async {
     try {
@@ -73,7 +41,7 @@ class RecipeRepo {
           await hive.cacheRecipeIfNeeded(recipe);
         }
 
-        return _getFilteredRecipes();
+        return _recipes;
       }
       _recipes = [];
       return [];
@@ -113,27 +81,34 @@ class RecipeRepo {
     }
   }
 
-  Future<List<Category>> getCategories() async {
+  Future<void> getCategories() async {
     try {
       final cached = hive.getCachedCategories();
       if (cached != null) {
         logger.d('Returning cached categories');
-        return cached;
+        _categories = cached;
+        return;
       }
 
       final response = await api.getCategories();
       if (response.statusCode == 200 && response.data != null) {
         final categoriesData = response.data['categories'] as List<dynamic>?;
-        if (categoriesData == null || categoriesData.isEmpty) return [];
+        if (categoriesData == null || categoriesData.isEmpty) {
+          _categories = [];
+          return;
+        }
 
         final categories = categoriesData
-            .map((cat) => Category.fromJson(cat as Map<String, dynamic>))
+            .map(
+              (cat) => Category.fromJson(Map<String, dynamic>.from(cat as Map)),
+            )
             .toList();
 
         await hive.cacheCategories(categories);
-        return categories;
+        _categories = categories;
+        return;
       }
-      return [];
+      _categories = [];
     } on DioException catch (e) {
       logger.e('Error getting categories: ${e.message}', error: e);
       rethrow;
@@ -143,27 +118,34 @@ class RecipeRepo {
     }
   }
 
-  Future<List<Area>> getAreas() async {
+  Future<void> getAreas() async {
     try {
       final cached = hive.getCachedAreas();
       if (cached != null) {
         logger.d('Returning cached areas');
-        return cached;
+        _areas = cached;
+        return;
       }
 
       final response = await api.getAreas();
       if (response.statusCode == 200 && response.data != null) {
         final areasData = response.data['meals'] as List<dynamic>?;
-        if (areasData == null || areasData.isEmpty) return [];
+        if (areasData == null || areasData.isEmpty) {
+          _areas = [];
+          return;
+        }
 
         final areas = areasData
-            .map((area) => Area.fromJson(area as Map<String, dynamic>))
+            .map(
+              (area) => Area.fromJson(Map<String, dynamic>.from(area as Map)),
+            )
             .toList();
 
         await hive.cacheAreas(areas);
-        return areas;
+        _areas = areas;
+        return;
       }
-      return [];
+      _areas = [];
     } on DioException catch (e) {
       logger.e('Error getting areas: ${e.message}', error: e);
       rethrow;

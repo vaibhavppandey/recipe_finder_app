@@ -18,7 +18,7 @@ class MealApiService {
   }
 
   Future<Response> getCategories() async {
-    return await dio.get(ApiConst.list, queryParameters: {ApiConst.c: 'list'});
+    return await dio.get(ApiConst.categories);
   }
 
   Future<Response> getAreas() async {

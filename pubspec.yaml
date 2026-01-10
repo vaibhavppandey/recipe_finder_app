@@ -37,12 +37,15 @@ dependencies:
   flutter_bloc: ^9.1.1
   meta: ^1.17.0
   dio: ^5.9.0
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
   path_provider: ^2.1.5
-  isar_flutter_libs: ^3.1.0+1
-  get_it: ^8.0.3
   logger: ^2.5.0
+  hive: ^2.2.3
+  get_it: ^9.2.0
+  equatable: ^2.0.8
+  cached_network_image: ^3.4.1
+  flutter_screenutil: ^5.9.3
+  shimmer_animation: ^2.2.1
+  flutter_keyboard_visibility: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -82,12 +85,42 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-Regular.ttf
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-Italic.ttf
+          style: italic
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-Light.ttf
+          weight: 300
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-Medium.ttf
+          weight: 500
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-SemiBoldItalic.ttf
+          weight: 600
+          style: italic
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-Bold.ttf
+          weight: 700
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-ExtraBold.ttf
+          weight: 800
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-ExtraBoldItalic.ttf
+          weight: 800
+          style: italic
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-ExtraLight.ttf
+          weight: 200
+        - asset: asset/Plus Jakarta Sans/PlusJakartaSans-ExtraLightItalic.ttf
+          weight: 200
+          style: italic
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

@@ -1,5 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:recipe_finder_app/data/enum/sort_option.dart';
+import 'package:recipe_finder_app/data/model/area.dart';
+import 'package:recipe_finder_app/data/model/category.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
 import 'package:recipe_finder_app/data/repo/recipe.dart';
 
@@ -9,38 +12,229 @@ part 'recipe_list_state.dart';
 class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
   final RecipeRepo repo;
 
-  RecipeListBloc({required this.repo}) : super(RecipeListInitial()) {
+  RecipeListBloc({required this.repo}) : super(const RecipeListInitial()) {
+    on<LoadInitialDataEvent>(_onLoadInitialData);
     on<SearchRecipesEvent>(_onSearchRecipes);
-    on<GetRecipeByIdEvent>(_onGetRecipeById);
+    on<FilterByCategoryEvent>(_onFilterByCategory);
+    on<FilterByAreaEvent>(_onFilterByArea);
+    on<ClearFiltersEvent>(_onClearFilters);
+    on<SortRecipesEvent>(_onSortRecipes);
+    on<ToggleViewModeEvent>(_onToggleViewMode);
+  }
+
+  Future<void> _onLoadInitialData(
+    LoadInitialDataEvent event,
+    Emitter<RecipeListState> emit,
+  ) async {
+    emit(RecipeListLoaded(recipes: const [], isGridView: state.isGridView));
   }
 
   Future<void> _onSearchRecipes(
     SearchRecipesEvent event,
     Emitter<RecipeListState> emit,
   ) async {
-    emit(RecipeListLoading());
+    String? selectedCategory;
+    String? selectedArea;
+
+    if (state is RecipeListLoaded) {
+      final currentState = state as RecipeListLoaded;
+      selectedCategory = currentState.selectedCategory;
+      selectedArea = currentState.selectedArea;
+    }
+
+    emit(RecipeListLoading(isGridView: state.isGridView));
+
     try {
       final recipes = await repo.searchMealByName(event.query);
-      emit(RecipeListSuccess(recipes));
+      if (recipes.isEmpty) {
+        emit(
+          RecipeListEmpty(
+            'No recipes found',
+            categories: const [],
+            areas: const [],
+            isGridView: state.isGridView,
+          ),
+        );
+      } else {
+        await repo.getCategories();
+        await repo.getAreas();
+        emit(
+          RecipeListLoaded(
+            recipes: recipes,
+            selectedCategory: selectedCategory,
+            selectedArea: selectedArea,
+            isGridView: state.isGridView,
+          ),
+        );
+      }
     } catch (e) {
-      emit(RecipeListError(e.toString()));
+      emit(
+        RecipeListError(
+          e.toString(),
+          categories: const [],
+          areas: const [],
+          isGridView: state.isGridView,
+        ),
+      );
     }
   }
 
-  Future<void> _onGetRecipeById(
-    GetRecipeByIdEvent event,
+  void _onFilterByCategory(
+    FilterByCategoryEvent event,
     Emitter<RecipeListState> emit,
-  ) async {
-    emit(RecipeDetailLoading());
-    try {
-      final recipe = await repo.getMealById(event.recipeId);
-      if (recipe != null) {
-        emit(RecipeDetailSuccess(recipe));
-      } else {
-        emit(RecipeDetailError('Recipe not found'));
-      }
-    } catch (e) {
-      emit(RecipeDetailError(e.toString()));
+  ) {
+    if (state is RecipeListLoaded) {
+      final currentState = state as RecipeListLoaded;
+      final filteredRecipes = _applyFilters(
+        repo.recipes,
+        event.category,
+        currentState.selectedArea,
+      );
+      final filterCount = _calculateFilterCount(
+        event.category,
+        currentState.selectedArea,
+      );
+
+      emit(
+        RecipeListLoaded(
+          recipes: filteredRecipes,
+          selectedCategory: event.category,
+          selectedArea: currentState.selectedArea,
+          sortOption: currentState.sortOption,
+          activeFilterCount: filterCount,
+          isGridView: currentState.isGridView,
+        ),
+      );
     }
+  }
+
+  void _onFilterByArea(FilterByAreaEvent event, Emitter<RecipeListState> emit) {
+    if (state is RecipeListLoaded) {
+      final currentState = state as RecipeListLoaded;
+      final filteredRecipes = _applyFilters(
+        repo.recipes,
+        currentState.selectedCategory,
+        event.area,
+      );
+      final filterCount = _calculateFilterCount(
+        currentState.selectedCategory,
+        event.area,
+      );
+
+      emit(
+        RecipeListLoaded(
+          recipes: filteredRecipes,
+          selectedCategory: currentState.selectedCategory,
+          selectedArea: event.area,
+          sortOption: currentState.sortOption,
+          activeFilterCount: filterCount,
+          isGridView: currentState.isGridView,
+        ),
+      );
+    }
+  }
+
+  void _onClearFilters(ClearFiltersEvent event, Emitter<RecipeListState> emit) {
+    if (state is RecipeListLoaded) {
+      final currentState = state as RecipeListLoaded;
+      final unfilteredRecipes = repo.recipes;
+
+      emit(
+        RecipeListLoaded(
+          recipes: unfilteredRecipes,
+          selectedCategory: null,
+          selectedArea: null,
+          sortOption: currentState.sortOption,
+          activeFilterCount: 0,
+          isGridView: currentState.isGridView,
+        ),
+      );
+    }
+  }
+
+  void _onSortRecipes(SortRecipesEvent event, Emitter<RecipeListState> emit) {
+    if (state is RecipeListLoaded) {
+      final currentState = state as RecipeListLoaded;
+      final sortedRecipes = _sortRecipes(
+        currentState.recipes,
+        event.sortOption,
+      );
+
+      emit(
+        RecipeListLoaded(
+          recipes: sortedRecipes,
+          selectedCategory: currentState.selectedCategory,
+          selectedArea: currentState.selectedArea,
+          sortOption: event.sortOption,
+          activeFilterCount: currentState.activeFilterCount,
+          isGridView: currentState.isGridView,
+        ),
+      );
+    }
+  }
+
+  void _onToggleViewMode(
+    ToggleViewModeEvent event,
+    Emitter<RecipeListState> emit,
+  ) {
+    if (state is RecipeListLoaded) {
+      final currentState = state as RecipeListLoaded;
+      emit(
+        RecipeListLoaded(
+          recipes: currentState.recipes,
+          selectedCategory: currentState.selectedCategory,
+          selectedArea: currentState.selectedArea,
+          sortOption: currentState.sortOption,
+          activeFilterCount: currentState.activeFilterCount,
+          isGridView: !currentState.isGridView,
+        ),
+      );
+    }
+  }
+
+  int _calculateFilterCount(String? category, String? area) {
+    int count = 0;
+    if (category != null) count++;
+    if (area != null) count++;
+    return count;
+  }
+
+  List<Recipe> _applyFilters(
+    List<Recipe> recipes,
+    String? category,
+    String? area,
+  ) {
+    var filtered = recipes;
+
+    if (category != null) {
+      filtered = filtered
+          .where((recipe) => recipe.category == category)
+          .toList();
+    }
+
+    if (area != null) {
+      filtered = filtered.where((recipe) => recipe.area == area).toList();
+    }
+
+    return filtered;
+  }
+
+  List<Recipe> _sortRecipes(List<Recipe> recipes, SortOption option) {
+    final sorted = List<Recipe>.from(recipes);
+    switch (option) {
+      case SortOption.nameAsc:
+        sorted.sort((a, b) => a.meal.compareTo(b.meal));
+        break;
+      case SortOption.nameDesc:
+        sorted.sort((a, b) => b.meal.compareTo(a.meal));
+        break;
+      case SortOption.categoryAsc:
+        sorted.sort((a, b) => a.category.compareTo(b.category));
+        break;
+      case SortOption.categoryDesc:
+        sorted.sort((a, b) => b.category.compareTo(a.category));
+        break;
+    }
+    return sorted;
   }
 }

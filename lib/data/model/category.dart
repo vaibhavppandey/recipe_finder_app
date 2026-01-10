@@ -3,11 +3,7 @@ class Category {
   final String name;
   final String thumb;
 
-  Category({
-    required this.id,
-    required this.name,
-    required this.thumb,
-  });
+  Category({required this.id, required this.name, required this.thumb});
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
@@ -18,11 +14,7 @@ class Category {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'idCategory': id,
-      'strCategory': name,
-      'strCategoryThumb': thumb,
-    };
+    return {'idCategory': id, 'strCategory': name, 'strCategoryThumb': thumb};
   }
 
   @override
@@ -45,9 +37,7 @@ class CategoryResponse {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'categories': categories.map((cat) => cat.toJson()).toList(),
-    };
+    return {'categories': categories.map((cat) => cat.toJson()).toList()};
   }
 
   @override
