@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
 import 'package:recipe_finder_app/presentation/widget/filter/area_filter_section.dart';
-import 'package:recipe_finder_app/presentation/widget/filter/bottom_sheet_handle.dart';
 import 'package:recipe_finder_app/presentation/widget/filter/category_filter_section.dart';
 import 'package:recipe_finder_app/presentation/widget/filter/sort_section.dart';
 
@@ -13,6 +13,7 @@ class FilterBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return BlocBuilder<RecipeListBloc, RecipeListState>(
       builder: (context, state) {
@@ -22,73 +23,56 @@ class FilterBottomSheet extends StatelessWidget {
           maxChildSize: 0.9,
           expand: false,
           builder: (context, scrollController) {
-            return Column(
-              children: [
-                const BottomSheetHandle(),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
+            return Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 12.h),
+                    width: 40.w,
+                    height: 4.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2.r),
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Filters & Sort', style: textTheme.titleLarge),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView(
-                    controller: scrollController,
-                    padding: REdgeInsets.all(16),
-                    children: [
-                      SortSection(state: state),
-                      24.verticalSpace,
-                      CategoryFilterSection(state: state),
-                      24.verticalSpace,
-                      AreaFilterSection(state: state),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: REdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10.r,
-                        offset: Offset(0, -2.h),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            context.read<RecipeListBloc>().add(
-                              ClearFiltersEvent(),
-                            );
-                          },
-                          child: const Text('Clear All'),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 8.h,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          StringConst.filtersAndSort,
+                          style: textTheme.titleLarge,
                         ),
-                      ),
-                      16.horizontalSpace,
-                      Expanded(
-                        child: ElevatedButton(
+                        IconButton(
+                          icon: const Icon(Icons.close),
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Apply'),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: ListView(
+                      controller: scrollController,
+                      padding: REdgeInsets.all(16),
+                      children: [
+                        SortSection(state: state),
+                        24.verticalSpace,
+                        CategoryFilterSection(state: state),
+                        24.verticalSpace,
+                        AreaFilterSection(state: state),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             );
           },
         );

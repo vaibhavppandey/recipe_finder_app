@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
 
 class SearchBarWidget extends StatefulWidget {
@@ -55,7 +56,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
           onChanged: _onSearchChanged,
           onSubmitted: _onSearchSubmitted,
           decoration: InputDecoration(
-            hintText: 'Search recipes...',
+            hintText: StringConst.searchRecipes,
             prefixIcon: Icon(
               Icons.search,
               color: Theme.of(context).colorScheme.primary,

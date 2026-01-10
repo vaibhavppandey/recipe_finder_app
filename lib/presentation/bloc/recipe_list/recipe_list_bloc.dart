@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/data/enum/sort_option.dart';
 import 'package:recipe_finder_app/data/model/area.dart';
 import 'package:recipe_finder_app/data/model/category.dart';
@@ -26,7 +27,9 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
     LoadInitialDataEvent event,
     Emitter<RecipeListState> emit,
   ) async {
-    emit(RecipeListLoaded(recipes: const [], isGridView: state.isGridView));
+    await repo.getCategories();
+    await repo.getAreas();
+    emit(const RecipeListEmpty(StringConst.searchToGetStarted));
   }
 
   Future<void> _onSearchRecipes(
@@ -47,20 +50,15 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
     try {
       final recipes = await repo.searchMealByName(event.query);
       if (recipes.isEmpty) {
-        emit(
-          RecipeListEmpty(
-            'No recipes found',
-            categories: const [],
-            areas: const [],
-            isGridView: state.isGridView,
-          ),
-        );
+        emit(RecipeListEmpty('No recipes found', isGridView: state.isGridView));
       } else {
         await repo.getCategories();
         await repo.getAreas();
         emit(
           RecipeListLoaded(
             recipes: recipes,
+            categories: repo.categories,
+            areas: repo.areas,
             selectedCategory: selectedCategory,
             selectedArea: selectedArea,
             isGridView: state.isGridView,
@@ -68,14 +66,7 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
         );
       }
     } catch (e) {
-      emit(
-        RecipeListError(
-          e.toString(),
-          categories: const [],
-          areas: const [],
-          isGridView: state.isGridView,
-        ),
-      );
+      emit(RecipeListError(e.toString(), isGridView: state.isGridView));
     }
   }
 
@@ -98,6 +89,8 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
       emit(
         RecipeListLoaded(
           recipes: filteredRecipes,
+          categories: currentState.categories,
+          areas: currentState.areas,
           selectedCategory: event.category,
           selectedArea: currentState.selectedArea,
           sortOption: currentState.sortOption,
@@ -124,6 +117,8 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
       emit(
         RecipeListLoaded(
           recipes: filteredRecipes,
+          categories: currentState.categories,
+          areas: currentState.areas,
           selectedCategory: currentState.selectedCategory,
           selectedArea: event.area,
           sortOption: currentState.sortOption,
@@ -142,6 +137,8 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
       emit(
         RecipeListLoaded(
           recipes: unfilteredRecipes,
+          categories: currentState.categories,
+          areas: currentState.areas,
           selectedCategory: null,
           selectedArea: null,
           sortOption: currentState.sortOption,
@@ -163,6 +160,8 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
       emit(
         RecipeListLoaded(
           recipes: sortedRecipes,
+          categories: currentState.categories,
+          areas: currentState.areas,
           selectedCategory: currentState.selectedCategory,
           selectedArea: currentState.selectedArea,
           sortOption: event.sortOption,
@@ -182,6 +181,8 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
       emit(
         RecipeListLoaded(
           recipes: currentState.recipes,
+          categories: currentState.categories,
+          areas: currentState.areas,
           selectedCategory: currentState.selectedCategory,
           selectedArea: currentState.selectedArea,
           sortOption: currentState.sortOption,
@@ -227,12 +228,6 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
         break;
       case SortOption.nameDesc:
         sorted.sort((a, b) => b.meal.compareTo(a.meal));
-        break;
-      case SortOption.categoryAsc:
-        sorted.sort((a, b) => a.category.compareTo(b.category));
-        break;
-      case SortOption.categoryDesc:
-        sorted.sort((a, b) => b.category.compareTo(a.category));
         break;
     }
     return sorted;

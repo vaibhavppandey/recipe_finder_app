@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
 
 class ActiveFiltersChips extends StatelessWidget {
@@ -56,7 +57,7 @@ class ActiveFiltersChips extends StatelessWidget {
                 onPressed: () {
                   context.read<RecipeListBloc>().add(ClearFiltersEvent());
                 },
-                child: const Text('Clear All'),
+                child: const Text(StringConst.clearAll),
               ),
             ],
           ),

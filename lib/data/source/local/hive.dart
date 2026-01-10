@@ -21,7 +21,7 @@ class HiveService {
     final box = Hive.box(LocalConst.cache);
     final data = box.get(id);
     if (data == null) return null;
-    return Recipe.fromJson(data as Map<String, dynamic>);
+    return Recipe.fromJson(Map<String, dynamic>.from(data as Map));
   }
 
   bool isRecipeCached(String id) {
@@ -32,7 +32,7 @@ class HiveService {
   List<Recipe> getAllCachedRecipes() {
     final box = Hive.box(LocalConst.cache);
     return box.values
-        .map((json) => Recipe.fromJson(json as Map<String, dynamic>))
+        .map((json) => Recipe.fromJson(Map<String, dynamic>.from(json as Map)))
         .toList();
   }
 
@@ -68,7 +68,7 @@ class HiveService {
   List<Recipe> getAllFavorites() {
     final box = Hive.box(LocalConst.favs);
     return box.values
-        .map((json) => Recipe.fromJson(json as Map<String, dynamic>))
+        .map((json) => Recipe.fromJson(Map<String, dynamic>.from(json as Map)))
         .toList();
   }
 

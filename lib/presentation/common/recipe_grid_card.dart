@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
+import 'package:recipe_finder_app/presentation/page/recipe_detail.dart';
 
 class RecipeGridCard extends StatelessWidget {
   final Recipe recipe;
@@ -8,7 +9,10 @@ class RecipeGridCard extends StatelessWidget {
   const RecipeGridCard({super.key, required this.recipe});
 
   void _navigateToDetail(BuildContext context) {
-    // TODO: Navigate to recipe detail page
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => RecipeDetailPage(recipeId: recipe.id)),
+    );
   }
 
   @override

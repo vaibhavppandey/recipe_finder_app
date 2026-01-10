@@ -1,1 +1,1 @@
-enum SortOption { nameAsc, nameDesc, categoryAsc, categoryDesc }
+enum SortOption { nameAsc, nameDesc }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
 import 'package:recipe_finder_app/presentation/widget/active_filters_chips.dart';
 import 'package:recipe_finder_app/presentation/widget/filter/filter_bottom_sheet.dart';
@@ -37,11 +40,14 @@ class _RecipeListPageState extends State<RecipeListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recipes'),
+        title: const Text(StringConst.recipes),
         actions: [
           BlocBuilder<RecipeListBloc, RecipeListState>(
             builder: (context, state) {
-              if (state is! RecipeListLoaded) return const SizedBox();
+              if (state is! RecipeListLoaded && state is! RecipeListEmpty) {
+                return const SizedBox();
+              }
+              if (state is RecipeListEmpty) return const SizedBox();
 
               return Row(
                 mainAxisSize: MainAxisSize.min,
@@ -77,11 +83,42 @@ class _RecipeListPageState extends State<RecipeListPage> {
 
                   case == RecipeListError:
                     final errorState = state as RecipeListError;
-                    return Center(child: Text('Error: ${errorState.message}'));
+                    return Center(
+                      child: Text(
+                        '${StringConst.error}: ${errorState.message}',
+                      ),
+                    );
 
                   case == RecipeListEmpty:
                     final emptyState = state as RecipeListEmpty;
-                    return Center(child: Text(emptyState.message));
+                    return KeyboardVisibilityBuilder(
+                      builder: (context, isKeyboardVisible) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (!isKeyboardVisible) ...[
+                                Icon(
+                                  emptyState.message ==
+                                          StringConst.searchToGetStarted
+                                      ? Icons.restaurant_menu
+                                      : Icons.search_off,
+                                  size: 80.sp,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary.withOpacity(0.5),
+                                ),
+                                24.verticalSpace,
+                              ],
+                              Text(
+                                emptyState.message,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
 
                   case == RecipeListLoaded:
                     final loadedState = state as RecipeListLoaded;
@@ -89,12 +126,34 @@ class _RecipeListPageState extends State<RecipeListPage> {
                       final hasFilters =
                           loadedState.selectedCategory != null ||
                           loadedState.selectedArea != null;
-                      return Center(
-                        child: Text(
-                          hasFilters
-                              ? 'No relevant recipes found!'
-                              : 'Search for recipes to get started!',
-                        ),
+                      return KeyboardVisibilityBuilder(
+                        builder: (context, isKeyboardVisible) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (!isKeyboardVisible) ...[
+                                  Icon(
+                                    hasFilters
+                                        ? Icons.search_off
+                                        : Icons.restaurant_menu,
+                                    size: 80.sp,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary.withOpacity(0.5),
+                                  ),
+                                  24.verticalSpace,
+                                ],
+                                Text(
+                                  hasFilters
+                                      ? StringConst.noRecipesFound
+                                      : StringConst.searchToGetStarted,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       );
                     }
 
@@ -111,8 +170,30 @@ class _RecipeListPageState extends State<RecipeListPage> {
                     );
 
                   default:
-                    return const Center(
-                      child: Text('Search for recipes to get started!'),
+                    return KeyboardVisibilityBuilder(
+                      builder: (context, isKeyboardVisible) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (!isKeyboardVisible) ...[
+                                Icon(
+                                  Icons.restaurant_menu,
+                                  size: 80.sp,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary.withOpacity(0.5),
+                                ),
+                                24.verticalSpace,
+                              ],
+                              const Text(
+                                StringConst.searchToGetStarted,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     );
                 }
               },

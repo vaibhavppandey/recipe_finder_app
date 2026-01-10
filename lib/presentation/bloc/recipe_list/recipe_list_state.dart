@@ -1,18 +1,12 @@
 part of 'recipe_list_bloc.dart';
 
 abstract class RecipeListState extends Equatable {
-  final List<Category> categories;
-  final List<Area> areas;
   final bool isGridView;
 
-  const RecipeListState({
-    this.categories = const [],
-    this.areas = const [],
-    this.isGridView = true,
-  });
+  const RecipeListState({this.isGridView = true});
 
   @override
-  List<Object?> get props => [categories, areas, isGridView];
+  List<Object?> get props => [isGridView];
 }
 
 class RecipeListInitial extends RecipeListState {
@@ -20,11 +14,13 @@ class RecipeListInitial extends RecipeListState {
 }
 
 class RecipeListLoading extends RecipeListState {
-  const RecipeListLoading({super.categories, super.areas, super.isGridView});
+  const RecipeListLoading({super.isGridView});
 }
 
 class RecipeListLoaded extends RecipeListState {
   final List<Recipe> recipes;
+  final List<Category> categories;
+  final List<Area> areas;
   final String? selectedCategory;
   final String? selectedArea;
   final SortOption sortOption;
@@ -32,6 +28,8 @@ class RecipeListLoaded extends RecipeListState {
 
   const RecipeListLoaded({
     required this.recipes,
+    this.categories = const [],
+    this.areas = const [],
     this.selectedCategory,
     this.selectedArea,
     this.sortOption = SortOption.nameAsc,
@@ -42,6 +40,8 @@ class RecipeListLoaded extends RecipeListState {
   @override
   List<Object?> get props => [
     recipes,
+    categories,
+    areas,
     selectedCategory,
     selectedArea,
     sortOption,
@@ -52,12 +52,7 @@ class RecipeListLoaded extends RecipeListState {
 
 class RecipeListEmpty extends RecipeListState {
   final String message;
-  const RecipeListEmpty(
-    this.message, {
-    super.categories,
-    super.areas,
-    super.isGridView,
-  });
+  const RecipeListEmpty(this.message, {super.isGridView});
 
   @override
   List<Object?> get props => [message, ...super.props];
@@ -65,12 +60,7 @@ class RecipeListEmpty extends RecipeListState {
 
 class RecipeListError extends RecipeListState {
   final String message;
-  const RecipeListError(
-    this.message, {
-    super.categories,
-    super.areas,
-    super.isGridView,
-  });
+  const RecipeListError(this.message, {super.isGridView});
 
   @override
   List<Object?> get props => [message, ...super.props];

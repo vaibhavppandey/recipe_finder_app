@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
 
 class AreaFilterSection extends StatelessWidget {
@@ -17,7 +18,7 @@ class AreaFilterSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Cuisine Area',
+          StringConst.cuisineArea,
           style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
         ),
         12.verticalSpace,
