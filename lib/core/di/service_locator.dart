@@ -24,7 +24,7 @@ Future<void> setupDI() async {
   await Hive.openBox(LocalConst.areas);
 
   // single logger
-  getIt.registerLazySingleton<Logger>(() => Logger());
+  getIt.registerLazySingleton<Logger>(() => Logger(level: Level.error));
 
   // singular dio
   getIt.registerLazySingleton<Dio>(() {
@@ -68,7 +68,7 @@ Future<void> setupDI() async {
     ),
   );
 
-  // BLoC
+  // blocs (singleton)
   getIt.registerFactory<RecipeListBloc>(
     () => RecipeListBloc(repo: getIt<RecipeRepo>()),
   );

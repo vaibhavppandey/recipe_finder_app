@@ -22,8 +22,6 @@ class RecipeImageHeader extends StatelessWidget {
       expandedHeight: 300.h,
       pinned: true,
       floating: false,
-      backgroundColor: Colors.transparent, // Set background to transparent
-      surfaceTintColor: Colors.transparent, // Set surface tint to transparent
       flexibleSpace: FlexibleSpaceBar(
         background: GestureDetector(
           onTap: onImageTap,
@@ -33,8 +31,11 @@ class RecipeImageHeader extends StatelessWidget {
               imageUrl: recipe.mealThumb,
               fit: BoxFit.cover,
               placeholder: (context, url) => Shimmer(
-                color: Colors.white,
-                child: Container(color: colorScheme.surfaceContainerHighest),
+                duration: const Duration(seconds: 2),
+                interval: const Duration(seconds: 1),
+                color: Colors.grey[300]!,
+                colorOpacity: 0.3,
+                child: Container(color: Colors.grey[300]),
               ),
               errorWidget: (context, url, error) => Container(
                 color: colorScheme.surfaceContainerHighest,

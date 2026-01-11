@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:recipe_finder_app/presentation/widget/shimmer/shimmer_box.dart';
 
 class RecipeDetailShimmer extends StatelessWidget {
   const RecipeDetailShimmer({super.key});
@@ -10,14 +11,14 @@ class RecipeDetailShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-      child: Shimmer(
-        color: colorScheme.surfaceContainerHighest,
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+        ),
         child: CustomScrollView(
           physics: const NeverScrollableScrollPhysics(),
           slivers: [
@@ -28,8 +29,12 @@ class RecipeDetailShimmer extends StatelessWidget {
               backgroundColor: Colors.transparent,
               surfaceTintColor: Colors.transparent,
               flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  color: colorScheme.surfaceContainerHighest,
+                background: Shimmer(
+                  duration: const Duration(seconds: 2),
+                  interval: const Duration(seconds: 1),
+                  color: Colors.grey[300]!,
+                  colorOpacity: 0.3,
+                  child: Container(color: Colors.grey[300]),
                 ),
               ),
             ),
@@ -40,38 +45,38 @@ class RecipeDetailShimmer extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Recipe Header Shimmer
-                    _buildShimmerContainer(
+                    ShimmerBox(
                       height: 32.h,
                       width: double.infinity,
                       borderRadius: 8.r,
-                      color: colorScheme,
+                      colorScheme: colorScheme,
                     ),
                     12.verticalSpace,
                     Row(
                       children: [
-                        _buildShimmerContainer(
+                        ShimmerBox(
                           height: 32.h,
                           width: 100.w,
                           borderRadius: 16.r,
-                          color: colorScheme,
+                          colorScheme: colorScheme,
                         ),
                         12.horizontalSpace,
-                        _buildShimmerContainer(
+                        ShimmerBox(
                           height: 32.h,
                           width: 100.w,
                           borderRadius: 16.r,
-                          color: colorScheme,
+                          colorScheme: colorScheme,
                         ),
                       ],
                     ),
                     24.verticalSpace,
 
                     // Ingredients Section Shimmer
-                    _buildShimmerContainer(
+                    ShimmerBox(
                       height: 24.h,
                       width: 150.w,
                       borderRadius: 8.r,
-                      color: colorScheme,
+                      colorScheme: colorScheme,
                     ),
                     16.verticalSpace,
                     ...List.generate(
@@ -80,18 +85,18 @@ class RecipeDetailShimmer extends StatelessWidget {
                         padding: REdgeInsets.only(bottom: 12),
                         child: Row(
                           children: [
-                            _buildShimmerContainer(
+                            ShimmerBox(
                               height: 6.h,
                               width: 6.w,
                               isCircle: true,
-                              color: colorScheme,
+                              colorScheme: colorScheme,
                             ),
                             12.horizontalSpace,
                             Expanded(
-                              child: _buildShimmerContainer(
+                              child: ShimmerBox(
                                 height: 16.h,
                                 borderRadius: 8.r,
-                                color: colorScheme,
+                                colorScheme: colorScheme,
                               ),
                             ),
                           ],
@@ -101,11 +106,11 @@ class RecipeDetailShimmer extends StatelessWidget {
                     24.verticalSpace,
 
                     // Instructions Section Shimmer
-                    _buildShimmerContainer(
+                    ShimmerBox(
                       height: 24.h,
                       width: 150.w,
                       borderRadius: 8.r,
-                      color: colorScheme,
+                      colorScheme: colorScheme,
                     ),
                     16.verticalSpace,
                     ...List.generate(
@@ -115,18 +120,18 @@ class RecipeDetailShimmer extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildShimmerContainer(
+                            ShimmerBox(
                               height: 16.h,
                               width: double.infinity,
                               borderRadius: 8.r,
-                              color: colorScheme,
+                              colorScheme: colorScheme,
                             ),
                             8.verticalSpace,
-                            _buildShimmerContainer(
+                            ShimmerBox(
                               height: 16.h,
                               width: 250.w,
                               borderRadius: 8.r,
-                              color: colorScheme,
+                              colorScheme: colorScheme,
                             ),
                           ],
                         ),
@@ -139,24 +144,6 @@ class RecipeDetailShimmer extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerContainer({
-    required double height,
-    double? width,
-    double borderRadius = 0,
-    bool isCircle = false,
-    required ColorScheme color,
-  }) {
-    return Container(
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-        color: color.surfaceContainerHighest,
-        borderRadius: isCircle ? null : BorderRadius.circular(borderRadius),
-        shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
       ),
     );
   }

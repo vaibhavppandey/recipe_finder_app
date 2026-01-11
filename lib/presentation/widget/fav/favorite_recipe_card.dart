@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recipe_finder_app/core/const/str.dart';
+import 'package:recipe_finder_app/core/theme/colors.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
 import 'package:recipe_finder_app/presentation/page/recipe_detail.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class FavoriteRecipeCard extends StatelessWidget {
   final Recipe recipe;
@@ -39,15 +41,15 @@ class FavoriteRecipeCard extends StatelessWidget {
             context: context,
             builder: (context) => AlertDialog(
               title: const Text(StringConst.removeFromFavorites),
-              content: Text('Remove "${recipe.meal}" from favorites?'),
+              content: Text(StringConst.confirmRemoveFavorite(recipe.meal)),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Cancel'),
+                  child: const Text(StringConst.cancel),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Remove'),
+                  child: const Text(StringConst.remove),
                 ),
               ],
             ),
@@ -57,7 +59,7 @@ class FavoriteRecipeCard extends StatelessWidget {
           onRemove();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${recipe.meal} removed from favorites'),
+              content: Text(StringConst.removedFromFavorites(recipe.meal)),
               duration: const Duration(seconds: 2),
             ),
           );
@@ -81,8 +83,13 @@ class FavoriteRecipeCard extends StatelessWidget {
                     imageUrl: recipe.mealThumb,
                     width: 120.w,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        Container(color: colorScheme.surfaceContainerHighest),
+                    placeholder: (context, url) => Shimmer(
+                      duration: const Duration(seconds: 2),
+                      interval: const Duration(seconds: 1),
+                      color: RFColors.greyOutline,
+                      colorOpacity: 0.3,
+                      child: Container(color: Colors.grey[300]),
+                    ),
                     errorWidget: (context, url, error) => Container(
                       color: colorScheme.surfaceContainerHighest,
                       child: Icon(

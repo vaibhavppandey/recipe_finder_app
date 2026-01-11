@@ -4,7 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/presentation/bloc/fav_recipe/fav_recipe_bloc.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
-import 'package:recipe_finder_app/presentation/widget/favorite_recipe_card.dart';
+import 'package:recipe_finder_app/presentation/widget/fav/favorite_recipe_card.dart';
+import 'package:recipe_finder_app/presentation/widget/fav/favorites_empty_state.dart';
 import 'package:recipe_finder_app/presentation/widget/shimmer/recipe_shimmer.dart';
 
 class FavoritesPage extends StatefulWidget {
@@ -30,7 +31,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           return switch (state) {
             FavRecipeLoading() => const RecipeShimmerList(),
 
-            FavRecipeEmpty() => _buildEmptyState(context, state.message),
+            FavRecipeEmpty() => FavoritesEmptyState(message: state.message),
 
             FavRecipeError() => Center(
               child: Column(
@@ -45,7 +46,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     onPressed: () {
                       context.read<FavRecipeBloc>().add(LoadFavoritesEvent());
                     },
-                    child: const Text('Retry'),
+                    child: const Text(StringConst.retry),
                   ),
                 ],
               ),
@@ -53,7 +54,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
             FavRecipeLoaded() =>
               state.recipes.isEmpty
-                  ? _buildEmptyState(context, StringConst.noFavoritesYet)
+                  ? const FavoritesEmptyState(
+                      message: StringConst.noFavoritesYet,
+                    )
                   : ListView.builder(
                       padding: REdgeInsets.all(16),
                       itemCount: state.recipes.length,
@@ -73,48 +76,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       },
                     ),
 
-            _ => _buildEmptyState(context, StringConst.noFavoritesYet),
+            _ => const FavoritesEmptyState(message: StringConst.noFavoritesYet),
           };
         },
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context, String message) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Opacity(
-            opacity: 0.5,
-            child: Icon(
-              Icons.favorite_border,
-              size: 80.sp,
-              color: colorScheme.secondary,
-            ),
-          ),
-          24.verticalSpace,
-          Text(
-            message,
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
-          ),
-          8.verticalSpace,
-          Text(
-            StringConst.startAddingFavorites,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          24.verticalSpace,
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(StringConst.browseRecipes),
-          ),
-        ],
       ),
     );
   }

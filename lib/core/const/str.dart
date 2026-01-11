@@ -20,6 +20,7 @@ class StringConst {
   // Recipe Detail
   static const String ingredients = 'Ingredients';
   static const String instructions = 'Instructions';
+  static const String videoTutorial = 'Video Tutorial';
 
   // Favorites
   static const String favorites = 'Favorites';
@@ -29,6 +30,31 @@ class StringConst {
   static const String browseRecipes = 'Browse Recipes';
   static const String removeFromFavorites = 'Remove from favorites';
 
+  // Tooltips
+  static const String filterRecipes = 'Filter recipes';
+  static const String listView = 'List view';
+  static const String gridView = 'Grid view';
+
   // Error
   static const String error = 'Error';
+  static const String retry = 'Retry';
+
+  // Dialog
+  static const String cancel = 'Cancel';
+  static const String remove = 'Remove';
+  static String confirmRemoveFavorite(String recipeName) =>
+      'Remove "$recipeName" from favorites?';
+  static String removedFromFavorites(String recipeName) =>
+      '$recipeName removed from favorites';
+
+  // Bloc Error Messages
+  static const String recipeNotFound = 'Recipe not found';
+  static String failedToLoadRecipe(String error) =>
+      'Failed to load recipe: $error';
+  static String failedToToggleFavorite(String error) =>
+      'Failed to toggle favorite: $error';
+  static String failedToLoadFavorites(String error) =>
+      'Failed to load favorites: $error';
+  static String failedToRemoveFavorite(String error) =>
+      'Failed to remove favorite: $error';
 }

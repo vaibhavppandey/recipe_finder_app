@@ -1,5 +1,6 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
 import 'package:recipe_finder_app/data/repo/recipe.dart';
 
@@ -25,12 +26,12 @@ class FavRecipeBloc extends Bloc<FavRecipeEvent, FavRecipeState> {
       final favorites = repo.getAllFavorites();
 
       if (favorites.isEmpty) {
-        emit(const FavRecipeEmpty('No favorite recipes yet'));
+        emit(const FavRecipeEmpty(StringConst.noFavoritesYet));
       } else {
         emit(FavRecipeLoaded(favorites));
       }
     } catch (e) {
-      emit(FavRecipeError('Failed to load favorites: ${e.toString()}'));
+      emit(FavRecipeError(StringConst.failedToLoadFavorites(e.toString())));
     }
   }
 
@@ -42,7 +43,7 @@ class FavRecipeBloc extends Bloc<FavRecipeEvent, FavRecipeState> {
       repo.removeFromFavorites(event.recipeId);
       add(LoadFavoritesEvent());
     } catch (e) {
-      emit(FavRecipeError('Failed to remove favorite: ${e.toString()}'));
+      emit(FavRecipeError(StringConst.failedToRemoveFavorite(e.toString())));
     }
   }
 
@@ -54,7 +55,7 @@ class FavRecipeBloc extends Bloc<FavRecipeEvent, FavRecipeState> {
       repo.toggleFavorite(event.recipe);
       add(LoadFavoritesEvent());
     } catch (e) {
-      emit(FavRecipeError('Failed to toggle favorite: ${e.toString()}'));
+      emit(FavRecipeError(StringConst.failedToToggleFavorite(e.toString())));
     }
   }
 }

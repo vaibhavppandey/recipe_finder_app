@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recipe_finder_app/core/theme/colors.dart';
 import 'package:recipe_finder_app/core/theme/text_theme.dart';
@@ -49,6 +48,13 @@ ThemeData buildAppTheme(BuildContext context) {
     bottomSheetTheme: _buildBottomSheetTheme(),
     progressIndicatorTheme: _buildProgressIndicatorTheme(),
     dividerTheme: _buildDividerTheme(),
+    tooltipTheme: TooltipThemeData(
+      textStyle: textTheme.bodySmall?.copyWith(color: colorScheme.onSecondary),
+      decoration: BoxDecoration(
+        color: colorScheme.secondary,
+        borderRadius: BorderRadius.circular(4.r),
+      ),
+    ),
   );
 }
 
@@ -59,11 +65,6 @@ AppBarTheme _buildAppBarTheme(TextTheme textTheme) {
     backgroundColor: RFColors.lightOrange,
     foregroundColor: RFColors.darkOrangeBrown,
     surfaceTintColor: Colors.transparent,
-    systemOverlayStyle: SystemUiOverlayStyle(
-      statusBarColor: RFColors.deepOrange,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ),
     titleTextStyle: textTheme.titleLarge?.copyWith(
       color: RFColors.darkOrangeBrown,
     ),

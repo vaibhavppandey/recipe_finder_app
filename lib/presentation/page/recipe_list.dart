@@ -45,7 +45,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.favorite_border),
-            tooltip: 'Favorites',
+            tooltip: StringConst.favorites,
             onPressed: () {
               Navigator.push(
                 context,
@@ -65,12 +65,14 @@ class _RecipeListPageState extends State<RecipeListPage> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.filter_list),
-                    tooltip: 'Filter recipes',
+                    tooltip: StringConst.filterRecipes,
                     onPressed: () => _showFilterBottomSheet(context),
                   ),
                   IconButton(
                     icon: Icon(state.isGridView ? Icons.list : Icons.grid_view),
-                    tooltip: state.isGridView ? 'List view' : 'Grid view',
+                    tooltip: state.isGridView
+                        ? StringConst.listView
+                        : StringConst.gridView,
                     onPressed: () {
                       context.read<RecipeListBloc>().add(ToggleViewModeEvent());
                     },

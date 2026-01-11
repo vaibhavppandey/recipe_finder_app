@@ -1,0 +1,124 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build Flutter APK
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        id: flutter-action
+        with:
+          flutter-version: '3.32.5'
+          channel: 'stable'
+          cache: true
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Verify Flutter installation
+        run: |
+          echo "Building with Flutter version information:"
+          flutter --version
+          echo ""
+          echo "Dart version information:"
+          dart --version
+
+      - name: Ensure gradlew is executable
+        run: |
+          chmod +x ./android/gradlew || true
+          chmod +x ./gradlew || true
+
+      - name: Install Android SDK components and accept licenses
+        run: |
+          echo "Installing Android SDK components (if available) and accepting licenses"
+          if command -v sdkmanager >/dev/null 2>&1; then
+            yes | sdkmanager --licenses || true
+            sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0" || true
+          else
+            echo "sdkmanager not found in PATH; flutter action may have preinstalled required SDK components"
+          fi
+
+  # Cache handled by subosito/flutter-action (cache: true) - no separate cache step required
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: |
+          echo "Starting APK build process..."
+          flutter build apk --release
+          echo "APK build completed successfully"
+
+      - name: Create APK directory and rename
+        run: |
+          echo "Creating release directory..."
+          mkdir -p release
+
+      - name: Show build output directory
+        run: |
+          echo "Listing build output directory contents:"
+          ls -la build/app/outputs/flutter-apk || true
+
+      - name: Verify APK exists and copy
+        run: |
+          APK_PATH="build/app/outputs/flutter-apk/app-release.apk"
+          if [ -f "$APK_PATH" ]; then
+            echo "Found APK at $APK_PATH"
+            cp "$APK_PATH" release/boozin.apk
+            echo "APK copied to release/boozin.apk"
+          else
+            echo "APK not found at expected path: $APK_PATH"
+            echo "Listing build/app/outputs/flutter-apk for debugging:"
+            ls -la build/app/outputs/flutter-apk || true
+            exit 1
+          fi
+
+      - name: Generate build info
+        run: |
+          echo "Generating build information..."
+          echo "Build Information:" > release/build-info.txt
+          echo "Commit: ${{ github.sha }}" >> release/build-info.txt
+          echo "Branch: ${{ github.ref_name }}" >> release/build-info.txt
+          echo "Build Date: $(date)" >> release/build-info.txt
+          echo "Flutter Version: $(flutter --version | head -1)" >> release/build-info.txt
+          echo "Dart Version: $(dart --version)" >> release/build-info.txt
+          echo "Build completed on: $(date)" >> release/build-info.txt
+          echo "Build information file created successfully"
+
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: boozin-apk-${{ github.run_number }}
+          path: release/
+          retention-days: 30
+
+      - name: Upload APK to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/boozin.apk
+            release/build-info.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

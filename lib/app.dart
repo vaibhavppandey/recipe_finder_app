@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:recipe_finder_app/core/di/injection.dart';
+import 'package:recipe_finder_app/core/di/service_locator.dart';
 import 'package:recipe_finder_app/core/theme/theme.dart';
 import 'package:recipe_finder_app/presentation/bloc/fav_recipe/fav_recipe_bloc.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_detail/recipe_detail_bloc.dart';
@@ -19,7 +19,7 @@ class RecipeFinderApp extends StatefulWidget {
 class _RecipeFinderAppState extends State<RecipeFinderApp> {
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
+    return ScreenUtilInit( // responsiveness ftw
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
@@ -38,7 +38,7 @@ class _RecipeFinderAppState extends State<RecipeFinderApp> {
               ),
             ],
             child: MaterialApp(
-              title: 'Recipe Finder',
+              title: 'Recipe Finder App',
               theme: buildAppTheme(context),
               home: const RecipeListPage(),
             ),

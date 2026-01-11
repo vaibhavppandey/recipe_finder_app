@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
 import 'package:recipe_finder_app/data/repo/recipe.dart';
 
@@ -28,14 +29,14 @@ class RecipeDetailBloc extends Bloc<RecipeDetailEvent, RecipeDetailState> {
       final recipe = await repo.getMealById(event.recipeId);
 
       if (recipe == null) {
-        emit(const RecipeDetailError('Recipe not found'));
+        emit(const RecipeDetailError(StringConst.recipeNotFound));
         return;
       }
 
       final isFavorite = repo.hive.isFavorite(recipe.id);
       emit(RecipeDetailLoaded(recipe: recipe, isFavorite: isFavorite));
     } catch (e) {
-      emit(RecipeDetailError('Failed to load recipe: ${e.toString()}'));
+      emit(RecipeDetailError(StringConst.failedToLoadRecipe(e.toString())));
     }
   }
 
@@ -55,7 +56,7 @@ class RecipeDetailBloc extends Bloc<RecipeDetailEvent, RecipeDetailState> {
         RecipeDetailLoaded(recipe: currentState.recipe, isFavorite: isFavorite),
       );
     } catch (e) {
-      emit(RecipeDetailError('Failed to toggle favorite: ${e.toString()}'));
+      emit(RecipeDetailError(StringConst.failedToToggleFavorite(e.toString())));
     }
   }
 }

@@ -1,10 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:recipe_finder_app/core/di/injection.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
-import 'package:recipe_finder_app/data/repo/recipe.dart';
 import 'package:recipe_finder_app/presentation/page/recipe_detail.dart';
+import 'package:recipe_finder_app/presentation/widget/common/favorite_icon_button.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class RecipeGridCard extends StatefulWidget {
@@ -17,16 +16,6 @@ class RecipeGridCard extends StatefulWidget {
 }
 
 class _RecipeGridCardState extends State<RecipeGridCard> {
-  late final RecipeRepo _repo;
-  bool _isFavorite = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _repo = getIt<RecipeRepo>();
-    _isFavorite = _repo.isFavorite(widget.recipe.id);
-  }
-
   void _navigateToDetail(BuildContext context) {
     Navigator.push(
       context,
@@ -65,10 +54,11 @@ class _RecipeGridCardState extends State<RecipeGridCard> {
                             imageUrl: widget.recipe.mealThumb,
                             fit: BoxFit.cover,
                             placeholder: (context, url) => Shimmer(
-                              color: Colors.white,
-                              child: Container(
-                                color: colorScheme.surfaceContainerHighest,
-                              ),
+                              duration: const Duration(seconds: 2),
+                              interval: const Duration(seconds: 1),
+                              color: Colors.grey[300]!,
+                              colorOpacity: 0.3,
+                              child: Container(color: Colors.grey[300]),
                             ),
                             errorWidget: (context, url, error) => Container(
                               color: colorScheme.surfaceContainerHighest,
@@ -91,7 +81,13 @@ class _RecipeGridCardState extends State<RecipeGridCard> {
                   Positioned(
                     top: 8.h,
                     right: 8.w,
-                    child: _buildFavoriteButton(colorScheme),
+                    child: FavoriteIconButton(
+                      recipe: widget.recipe,
+                      iconSize: 20,
+                      minWidth: 36,
+                      minHeight: 36,
+                      withBackground: true,
+                    ),
                   ),
                 ],
               ),
@@ -126,33 +122,6 @@ class _RecipeGridCardState extends State<RecipeGridCard> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFavoriteButton(ColorScheme colorScheme) {
-    return Opacity(
-      opacity: 0.9,
-      child: Container(
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          shape: BoxShape.circle,
-        ),
-        child: IconButton(
-          icon: Icon(
-            _isFavorite ? Icons.favorite : Icons.favorite_border,
-            size: 20.sp,
-            color: colorScheme.error,
-          ),
-          onPressed: () {
-            _repo.toggleFavorite(widget.recipe);
-            setState(() {
-              _isFavorite = _repo.isFavorite(widget.recipe.id);
-            });
-          },
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints(minWidth: 36.w, minHeight: 36.w),
         ),
       ),
     );

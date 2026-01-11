@@ -1,10 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:recipe_finder_app/core/di/injection.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
-import 'package:recipe_finder_app/data/repo/recipe.dart';
 import 'package:recipe_finder_app/presentation/page/recipe_detail.dart';
+import 'package:recipe_finder_app/presentation/widget/common/favorite_icon_button.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class RecipeListCard extends StatefulWidget {
@@ -17,16 +16,6 @@ class RecipeListCard extends StatefulWidget {
 }
 
 class _RecipeListCardState extends State<RecipeListCard> {
-  late final RecipeRepo _repo;
-  bool _isFavorite = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _repo = getIt<RecipeRepo>();
-    _isFavorite = _repo.isFavorite(widget.recipe.id);
-  }
-
   void _navigateToDetail(BuildContext context) {
     Navigator.push(
       context,
@@ -66,11 +55,14 @@ class _RecipeListCardState extends State<RecipeListCard> {
                           height: 100.w,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Shimmer(
-                            color: Colors.white,
+                            duration: const Duration(seconds: 2),
+                            interval: const Duration(seconds: 1),
+                            color: Colors.grey[300]!,
+                            colorOpacity: 0.3,
                             child: Container(
                               width: 100.w,
                               height: 100.w,
-                              color: colorScheme.surfaceContainerHighest,
+                              color: Colors.grey[300],
                             ),
                           ),
                           errorWidget: (context, url, error) => Container(
@@ -160,7 +152,12 @@ class _RecipeListCardState extends State<RecipeListCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildFavoriteButton(colorScheme),
+                  FavoriteIconButton(
+                    recipe: widget.recipe,
+                    iconSize: 22,
+                    minWidth: 40,
+                    minHeight: 40,
+                  ),
                   20.verticalSpace,
                   Icon(
                     Icons.chevron_right,
@@ -172,24 +169,6 @@ class _RecipeListCardState extends State<RecipeListCard> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFavoriteButton(ColorScheme colorScheme) {
-    return IconButton(
-      icon: Icon(
-        _isFavorite ? Icons.favorite : Icons.favorite_border,
-        size: 22.sp,
-        color: colorScheme.error,
-      ),
-      onPressed: () {
-        _repo.toggleFavorite(widget.recipe);
-        setState(() {
-          _isFavorite = _repo.isFavorite(widget.recipe.id);
-        });
-      },
-      padding: EdgeInsets.zero,
-      constraints: BoxConstraints(minWidth: 40.w, minHeight: 40.w),
     );
   }
 }

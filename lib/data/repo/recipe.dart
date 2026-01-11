@@ -37,9 +37,10 @@ class RecipeRepo {
 
         _recipes = recipes;
 
-        for (var recipe in recipes) {
-          hive.cacheRecipeIfNeeded(recipe);
-        }
+        // don't cache search results, call seperately
+        // for (var recipe in recipes) {
+        //   hive.cacheRecipeIfNeeded(recipe);
+        // }
 
         return _recipes;
       }
@@ -104,6 +105,7 @@ class RecipeRepo {
             )
             .toList();
 
+        // cache & don't call the api again
         hive.cacheCategories(categories);
         _categories = categories;
         return;
