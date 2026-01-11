@@ -13,22 +13,13 @@ class RecipeYoutubePlayer extends StatefulWidget {
 }
 
 class _RecipeYoutubePlayerState extends State<RecipeYoutubePlayer> {
-  late YoutubePlayerController _controller;
 
   @override
-  void initState() {
-    super.initState();
-    final videoId = YoutubePlayer.convertUrlToId(widget.youtubeUrl);
-    _controller = YoutubePlayerController(
-      initialVideoId: videoId ?? '',
-      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void didUpdateWidget(RecipeYoutubePlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.youtubeUrl != widget.youtubeUrl) {
+      setState(() {});
+    }
   }
 
   @override
@@ -53,7 +44,11 @@ class _RecipeYoutubePlayerState extends State<RecipeYoutubePlayer> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12.r),
             child: YoutubePlayer(
-              controller: _controller,
+              key: ValueKey(videoId),
+              controller: YoutubePlayerController(
+                initialVideoId: videoId,
+                flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
+              ),
               showVideoProgressIndicator: true,
             ),
           ),

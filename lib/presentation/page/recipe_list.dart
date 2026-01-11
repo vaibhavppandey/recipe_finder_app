@@ -99,8 +99,30 @@ class _RecipeListPageState extends State<RecipeListPage> {
                   case == RecipeListError:
                     final errorState = state as RecipeListError;
                     return Center(
-                      child: Text(
-                        '${StringConst.error}: ${errorState.message}',
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 64.sp,
+                            color: Colors.red,
+                          ),
+                          16.verticalSpace,
+                          Text(
+                            '${StringConst.error}: ${errorState.message}',
+                            textAlign: TextAlign.center,
+                          ),
+                          24.verticalSpace,
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              context.read<RecipeListBloc>().add(
+                                LoadInitialDataEvent(),
+                              );
+                            },
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Try Again'),
+                          ),
+                        ],
                       ),
                     );
 

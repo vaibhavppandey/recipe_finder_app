@@ -9,7 +9,7 @@ import 'package:recipe_finder_app/data/source/remote/api.dart';
 class RecipeRepo {
   final MealApiService api;
   final HiveService hive;
-  final Logger logger;
+  final Logger logger; // logger had to be di'ed
 
   List<Recipe> _recipes = [];
   List<Category> _categories = [];
@@ -48,10 +48,12 @@ class RecipeRepo {
       return [];
     } on DioException catch (e) {
       logger.e('Error searching meals by name: ${e.message}', error: e);
-      rethrow;
+      throw Exception(
+        'Unable to search recipes. Please check your internet connection and try again.',
+      );
     } catch (e) {
       logger.e('Unexpected error searching meals by name', error: e);
-      rethrow;
+      throw Exception('An unexpected error occurred while searching recipes.');
     }
   }
 
@@ -75,10 +77,14 @@ class RecipeRepo {
       return null;
     } on DioException catch (e) {
       logger.e('Error getting meal by id: ${e.message}', error: e);
-      rethrow;
+      throw Exception(
+        'Unable to load recipe details. Please check your internet connection and try again.',
+      );
     } catch (e) {
       logger.e('Unexpected error getting meal by id', error: e);
-      rethrow;
+      throw Exception(
+        'An unexpected error occurred while loading recipe details.',
+      );
     }
   }
 
@@ -113,10 +119,12 @@ class RecipeRepo {
       _categories = [];
     } on DioException catch (e) {
       logger.e('Error getting categories: ${e.message}', error: e);
-      rethrow;
+      throw Exception(
+        'Unable to load categories. Please check your internet connection and try again.',
+      );
     } catch (e) {
       logger.e('Unexpected error getting categories', error: e);
-      rethrow;
+      throw Exception('An unexpected error occurred while loading categories.');
     }
   }
 
@@ -150,10 +158,14 @@ class RecipeRepo {
       _areas = [];
     } on DioException catch (e) {
       logger.e('Error getting areas: ${e.message}', error: e);
-      rethrow;
+      throw Exception(
+        'Unable to load cuisine areas. Please check your internet connection and try again.',
+      );
     } catch (e) {
       logger.e('Unexpected error getting areas', error: e);
-      rethrow;
+      throw Exception(
+        'An unexpected error occurred while loading cuisine areas.',
+      );
     }
   }
 

@@ -22,12 +22,10 @@ class RecipeDetailBloc extends Bloc<RecipeDetailEvent, RecipeDetailState> {
     emit(const RecipeDetailLoading());
 
     try {
-      // Ensure shimmer is visible for at least a short duration
-      await Future.delayed(const Duration(milliseconds: 500));
+      // shimmer as to be shown anywho
+      await Future.delayed(const Duration(milliseconds: 250));
 
-      repo.logger.d('API call for meal ID: ${event.recipeId}');
       final recipe = await repo.getMealById(event.recipeId);
-
       if (recipe == null) {
         emit(const RecipeDetailError(StringConst.recipeNotFound));
         return;

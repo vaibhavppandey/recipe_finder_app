@@ -13,7 +13,7 @@ class Recipe {
   final String creativeCommonsConfirmed;
   final String dateModified;
 
-  // Ingredients 1–20
+  // max 20
   final String ingredient1;
   final String ingredient2;
   final String ingredient3;

@@ -29,14 +29,6 @@ class FavoritesEmptyState extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),
-          8.verticalSpace,
-          Text(
-            StringConst.startAddingFavorites,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
           24.verticalSpace,
           ElevatedButton(
             onPressed: () => Navigator.pop(context),

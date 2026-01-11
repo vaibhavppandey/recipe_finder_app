@@ -24,6 +24,8 @@ class RecipeInstructions extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    int stepNumber = 0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -34,14 +36,15 @@ class RecipeInstructions extends StatelessWidget {
           ),
         ),
         12.verticalSpace,
-        ...steps.asMap().entries.map((entry) {
-          final index = entry.key + 1;
-          var step = entry.value.trim();
+        ...steps.map((stepText) {
+          var step = stepText.trim();
 
-          step = step.replaceFirst(
-            RegExp(r'^step\s+\d+[:\s]*', caseSensitive: false),
-            '',
-          );
+          step = step
+              .replaceFirst(
+                RegExp(r'^step\s+\d+[:\s]*', caseSensitive: false),
+                '',
+              )
+              .replaceFirst(RegExp(r'^\d+\.\s*'), '');
 
           if (step.isEmpty) {
             return const SizedBox.shrink();
@@ -61,7 +64,7 @@ class RecipeInstructions extends StatelessWidget {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    '$index',
+                    '$stepNumber',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,

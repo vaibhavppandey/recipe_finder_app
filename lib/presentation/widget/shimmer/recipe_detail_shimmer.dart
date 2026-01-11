@@ -22,7 +22,7 @@ class RecipeDetailShimmer extends StatelessWidget {
         child: CustomScrollView(
           physics: const NeverScrollableScrollPhysics(),
           slivers: [
-            // Image Header Shimmer
+            // sliver shimmer
             SliverAppBar(
               expandedHeight: 300.h,
               pinned: true,
@@ -44,7 +44,6 @@ class RecipeDetailShimmer extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Recipe Header Shimmer
                     ShimmerBox(
                       height: 32.h,
                       width: double.infinity,
@@ -70,8 +69,6 @@ class RecipeDetailShimmer extends StatelessWidget {
                       ],
                     ),
                     24.verticalSpace,
-
-                    // Ingredients Section Shimmer
                     ShimmerBox(
                       height: 24.h,
                       width: 150.w,
@@ -104,8 +101,6 @@ class RecipeDetailShimmer extends StatelessWidget {
                       ),
                     ),
                     24.verticalSpace,
-
-                    // Instructions Section Shimmer
                     ShimmerBox(
                       height: 24.h,
                       width: 150.w,

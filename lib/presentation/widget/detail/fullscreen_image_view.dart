@@ -30,10 +30,10 @@ class FullscreenImageView extends StatelessWidget {
               ),
             ),
           ),
-          SafeArea(
-            child: Positioned(
-              top: 16.h,
-              right: 16.w,
+          Positioned(
+            top: 16.h,
+            right: 16.w,
+            child: SafeArea(
               child: IconButton(
                 icon: Icon(
                   Icons.close,

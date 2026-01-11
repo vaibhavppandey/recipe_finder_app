@@ -29,7 +29,7 @@ class FavoriteRecipeCard extends StatelessWidget {
         direction: DismissDirection.endToStart,
         background: Container(
           alignment: Alignment.centerRight,
-          // padding: REdgeInsets.only(right: 16),
+          padding: REdgeInsets.only(right: 16),
           decoration: BoxDecoration(
             color: colorScheme.error,
             borderRadius: BorderRadius.circular(12.r),
@@ -88,7 +88,7 @@ class FavoriteRecipeCard extends StatelessWidget {
                       interval: const Duration(seconds: 1),
                       color: RFColors.greyOutline,
                       colorOpacity: 0.3,
-                      child: Container(color: Colors.grey[300]),
+                      child: Container(color: RFColors.lightGrey),
                     ),
                     errorWidget: (context, url, error) => Container(
                       color: colorScheme.surfaceContainerHighest,

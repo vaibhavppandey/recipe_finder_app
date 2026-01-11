@@ -6,7 +6,7 @@ class ApiConst {
   static const String list = '/list.php';
   static const String categories = '/categories.php';
   static const String search = 's';
-  static const String id = 'i';
-  static const String c = 'c';
-  static const String a = 'a';
+  static const String id = 'i'; // ingredient
+  static const String c = 'c'; //category
+  static const String a = 'a'; //area
 }

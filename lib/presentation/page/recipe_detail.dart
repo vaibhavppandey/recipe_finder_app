@@ -23,6 +23,8 @@ class RecipeDetailPage extends StatefulWidget {
 }
 
 class _RecipeDetailPageState extends State<RecipeDetailPage> {
+  bool _isImageNavigationInProgress = false;
+
   @override
   void initState() {
     super.initState();
@@ -55,7 +57,17 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                   children: [
                     Icon(Icons.error_outline, size: 64.sp, color: Colors.red),
                     16.verticalSpace,
-                    Text(state.message),
+                    Text(state.message, textAlign: TextAlign.center),
+                    24.verticalSpace,
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.read<RecipeDetailBloc>().add(
+                          LoadRecipeDetailEvent(widget.recipeId),
+                        );
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Try Again'),
+                    ),
                   ],
                 ),
               ),
@@ -101,8 +113,19 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   }
 
   void _showFullscreenImage(BuildContext context, Recipe recipe) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => FullscreenImageView(recipe: recipe)),
-    );
+    if (_isImageNavigationInProgress) return;
+
+    _isImageNavigationInProgress = true;
+
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => FullscreenImageView(recipe: recipe),
+          ),
+        )
+        .then((_) {
+          // Reset the flag when navigation completes
+          _isImageNavigationInProgress = false;
+        });
   }
 }
