@@ -21,6 +21,14 @@ class StringConst {
   static const String ingredients = 'Ingredients';
   static const String instructions = 'Instructions';
 
+  // Favorites
+  static const String favorites = 'Favorites';
+  static const String noFavoritesYet = 'No favorite recipes yet';
+  static const String startAddingFavorites =
+      'Tap the heart icon to save recipes';
+  static const String browseRecipes = 'Browse Recipes';
+  static const String removeFromFavorites = 'Remove from favorites';
+
   // Error
   static const String error = 'Error';
 }

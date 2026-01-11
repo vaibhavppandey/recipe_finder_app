@@ -6,15 +6,11 @@ import 'package:shimmer_animation/shimmer_animation.dart';
 
 class RecipeImageHeader extends StatelessWidget {
   final Recipe recipe;
-  final bool isFavorite;
-  final VoidCallback onFavoritePressed;
   final VoidCallback onImageTap;
 
   const RecipeImageHeader({
     super.key,
     required this.recipe,
-    required this.isFavorite,
-    required this.onFavoritePressed,
     required this.onImageTap,
   });
 
@@ -26,6 +22,8 @@ class RecipeImageHeader extends StatelessWidget {
       expandedHeight: 300.h,
       pinned: true,
       floating: false,
+      backgroundColor: Colors.transparent, // Set background to transparent
+      surfaceTintColor: Colors.transparent, // Set surface tint to transparent
       flexibleSpace: FlexibleSpaceBar(
         background: GestureDetector(
           onTap: onImageTap,
@@ -50,22 +48,6 @@ class RecipeImageHeader extends StatelessWidget {
           ),
         ),
       ),
-      actions: [
-        Container(
-          margin: REdgeInsets.only(right: 8),
-          decoration: BoxDecoration(
-            color: colorScheme.surface.withOpacity(0.9),
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: colorScheme.error,
-            ),
-            onPressed: onFavoritePressed,
-          ),
-        ),
-      ],
     );
   }
 }

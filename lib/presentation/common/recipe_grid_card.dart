@@ -1,17 +1,38 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:recipe_finder_app/core/di/injection.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
+import 'package:recipe_finder_app/data/repo/recipe.dart';
 import 'package:recipe_finder_app/presentation/page/recipe_detail.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
-class RecipeGridCard extends StatelessWidget {
+class RecipeGridCard extends StatefulWidget {
   final Recipe recipe;
 
   const RecipeGridCard({super.key, required this.recipe});
 
+  @override
+  State<RecipeGridCard> createState() => _RecipeGridCardState();
+}
+
+class _RecipeGridCardState extends State<RecipeGridCard> {
+  late final RecipeRepo _repo;
+  bool _isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _repo = getIt<RecipeRepo>();
+    _isFavorite = _repo.isFavorite(widget.recipe.id);
+  }
+
   void _navigateToDetail(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => RecipeDetailPage(recipeId: recipe.id)),
+      MaterialPageRoute(
+        builder: (_) => RecipeDetailPage(recipeId: widget.recipe.id),
+      ),
     );
   }
 
@@ -38,23 +59,28 @@ class RecipeGridCard extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   Hero(
-                    tag: 'recipe-${recipe.id}',
-                    child: recipe.mealThumb.isNotEmpty
-                        ? Image.network(
-                            recipe.mealThumb,
+                    tag: 'recipe-${widget.recipe.id}',
+                    child: widget.recipe.mealThumb.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: widget.recipe.mealThumb,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  color: colorScheme.surfaceVariant,
-                                  child: Icon(
-                                    Icons.restaurant,
-                                    size: 60.sp,
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
+                            placeholder: (context, url) => Shimmer(
+                              color: Colors.white,
+                              child: Container(
+                                color: colorScheme.surfaceContainerHighest,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.restaurant,
+                                size: 60.sp,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           )
                         : Container(
-                            color: colorScheme.surfaceVariant,
+                            color: colorScheme.surfaceContainerHighest,
                             child: Icon(
                               Icons.restaurant,
                               size: 60.sp,
@@ -79,7 +105,7 @@ class RecipeGridCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      recipe.meal,
+                      widget.recipe.meal,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleSmall?.copyWith(
@@ -88,7 +114,7 @@ class RecipeGridCard extends StatelessWidget {
                     ),
                     4.verticalSpace,
                     Text(
-                      '${recipe.category} • ${recipe.area}',
+                      '${widget.recipe.category} • ${widget.recipe.area}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodySmall?.copyWith(
@@ -106,22 +132,28 @@ class RecipeGridCard extends StatelessWidget {
   }
 
   Widget _buildFavoriteButton(ColorScheme colorScheme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface.withOpacity(0.9),
-        shape: BoxShape.circle,
-      ),
-      child: IconButton(
-        icon: Icon(
-          Icons.favorite_border,
-          size: 20.sp,
-          color: colorScheme.error,
+    return Opacity(
+      opacity: 0.9,
+      child: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          shape: BoxShape.circle,
         ),
-        onPressed: () {
-          // TODO: Add to favorites
-        },
-        padding: EdgeInsets.zero,
-        constraints: BoxConstraints(minWidth: 36.w, minHeight: 36.w),
+        child: IconButton(
+          icon: Icon(
+            _isFavorite ? Icons.favorite : Icons.favorite_border,
+            size: 20.sp,
+            color: colorScheme.error,
+          ),
+          onPressed: () {
+            _repo.toggleFavorite(widget.recipe);
+            setState(() {
+              _isFavorite = _repo.isFavorite(widget.recipe.id);
+            });
+          },
+          padding: EdgeInsets.zero,
+          constraints: BoxConstraints(minWidth: 36.w, minHeight: 36.w),
+        ),
       ),
     );
   }

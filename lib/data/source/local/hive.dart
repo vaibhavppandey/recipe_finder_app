@@ -5,15 +5,15 @@ import 'package:recipe_finder_app/data/model/category.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
 
 class HiveService {
-  Future<void> cacheRecipe(Recipe recipe) async {
+  void cacheRecipe(Recipe recipe) {
     final box = Hive.box(LocalConst.cache);
-    await box.put(recipe.id, recipe.toJson());
+    box.put(recipe.id, recipe.toJson());
   }
 
-  Future<void> cacheRecipeIfNeeded(Recipe recipe) async {
+  void cacheRecipeIfNeeded(Recipe recipe) {
     final box = Hive.box(LocalConst.cache);
     if (!box.containsKey(recipe.id)) {
-      await box.put(recipe.id, recipe.toJson());
+      box.put(recipe.id, recipe.toJson());
     }
   }
 
@@ -38,17 +38,17 @@ class HiveService {
 
   Future<void> clearRecipeCache() async {
     final box = Hive.box(LocalConst.cache);
-    await box.clear();
+    box.clear();
   }
 
-  Future<void> addToFavorites(Recipe recipe) async {
+  void addToFavorites(Recipe recipe) {
     final box = Hive.box(LocalConst.favs);
-    await box.put(recipe.id, recipe.toJson());
+    box.put(recipe.id, recipe.toJson());
   }
 
-  Future<void> removeFromFavorites(String recipeId) async {
+  void removeFromFavorites(String recipeId) {
     final box = Hive.box(LocalConst.favs);
-    await box.delete(recipeId);
+    box.delete(recipeId);
   }
 
   bool isFavorite(String recipeId) {
@@ -56,12 +56,12 @@ class HiveService {
     return box.containsKey(recipeId);
   }
 
-  Future<void> toggleFavorite(Recipe recipe) async {
+  void toggleFavorite(Recipe recipe) {
     final isFav = isFavorite(recipe.id);
     if (isFav) {
-      await removeFromFavorites(recipe.id);
+      removeFromFavorites(recipe.id);
     } else {
-      await addToFavorites(recipe);
+      addToFavorites(recipe);
     }
   }
 
@@ -74,13 +74,13 @@ class HiveService {
 
   Future<void> clearFavorites() async {
     final box = Hive.box(LocalConst.favs);
-    await box.clear();
+    box.clear();
   }
 
-  Future<void> cacheCategories(List<Category> categories) async {
+  void cacheCategories(List<Category> categories) {
     final box = Hive.box(LocalConst.categories);
     final categoryList = categories.map((c) => c.toJson()).toList();
-    await box.put(LocalConst.data, categoryList);
+    box.put(LocalConst.data, categoryList);
   }
 
   List<Category>? getCachedCategories() {
@@ -99,10 +99,10 @@ class HiveService {
     return box.containsKey(LocalConst.data);
   }
 
-  Future<void> cacheAreas(List<Area> areas) async {
+  void cacheAreas(List<Area> areas) {
     final box = Hive.box(LocalConst.areas);
     final areaList = areas.map((a) => a.toJson()).toList();
-    await box.put(LocalConst.data, areaList);
+    box.put(LocalConst.data, areaList);
   }
 
   List<Area>? getCachedAreas() {
@@ -121,19 +121,19 @@ class HiveService {
 
   Future<void> clearCategoriesCache() async {
     final box = Hive.box(LocalConst.categories);
-    await box.clear();
+    box.clear();
   }
 
   Future<void> clearAreasCache() async {
     final box = Hive.box(LocalConst.areas);
-    await box.clear();
+    box.clear();
   }
 
   Future<void> clearData() async {
-    await clearRecipeCache();
-    await clearFavorites();
-    await clearCategoriesCache();
-    await clearAreasCache();
+    clearRecipeCache();
+    clearFavorites();
+    clearCategoriesCache();
+    clearAreasCache();
   }
 
   Future<void> closeAll() async {
@@ -142,9 +142,9 @@ class HiveService {
     final categoriesBox = Hive.box(LocalConst.categories);
     final areasBox = Hive.box(LocalConst.areas);
 
-    await recipeBox.close();
-    await favBox.close();
-    await categoriesBox.close();
-    await areasBox.close();
+    recipeBox.close();
+    favBox.close();
+    categoriesBox.close();
+    areasBox.close();
   }
 }

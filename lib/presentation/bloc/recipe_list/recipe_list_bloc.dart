@@ -1,3 +1,4 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:recipe_finder_app/core/const/str.dart';
@@ -15,7 +16,8 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
 
   RecipeListBloc({required this.repo}) : super(const RecipeListInitial()) {
     on<LoadInitialDataEvent>(_onLoadInitialData);
-    on<SearchRecipesEvent>(_onSearchRecipes);
+    on<SearchRecipesEvent>(_onSearchRecipes, transformer: restartable());
+    on<RefreshSearchEvent>(_onRefreshSearch);
     on<FilterByCategoryEvent>(_onFilterByCategory);
     on<FilterByAreaEvent>(_onFilterByArea);
     on<ClearFiltersEvent>(_onClearFilters);
@@ -45,12 +47,23 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
       selectedArea = currentState.selectedArea;
     }
 
-    emit(RecipeListLoading(isGridView: state.isGridView));
+    emit(
+      RecipeListLoading(
+        isGridView: state.isGridView,
+        lastSearchQuery: event.query,
+      ),
+    );
 
     try {
       final recipes = await repo.searchMealByName(event.query);
       if (recipes.isEmpty) {
-        emit(RecipeListEmpty('No recipes found', isGridView: state.isGridView));
+        emit(
+          RecipeListEmpty(
+            'No recipes found',
+            isGridView: state.isGridView,
+            lastSearchQuery: event.query,
+          ),
+        );
       } else {
         await repo.getCategories();
         await repo.getAreas();
@@ -62,11 +75,28 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
             selectedCategory: selectedCategory,
             selectedArea: selectedArea,
             isGridView: state.isGridView,
+            lastSearchQuery: event.query,
           ),
         );
       }
     } catch (e) {
-      emit(RecipeListError(e.toString(), isGridView: state.isGridView));
+      emit(
+        RecipeListError(
+          e.toString(),
+          isGridView: state.isGridView,
+          lastSearchQuery: event.query,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onRefreshSearch(
+    RefreshSearchEvent event,
+    Emitter<RecipeListState> emit,
+  ) async {
+    final lastQuery = state.lastSearchQuery;
+    if (lastQuery != null && lastQuery.isNotEmpty) {
+      add(SearchRecipesEvent(lastQuery));
     }
   }
 
@@ -96,6 +126,7 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
           sortOption: currentState.sortOption,
           activeFilterCount: filterCount,
           isGridView: currentState.isGridView,
+          lastSearchQuery: currentState.lastSearchQuery,
         ),
       );
     }
@@ -124,6 +155,7 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
           sortOption: currentState.sortOption,
           activeFilterCount: filterCount,
           isGridView: currentState.isGridView,
+          lastSearchQuery: currentState.lastSearchQuery,
         ),
       );
     }
@@ -144,6 +176,7 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
           sortOption: currentState.sortOption,
           activeFilterCount: 0,
           isGridView: currentState.isGridView,
+          lastSearchQuery: currentState.lastSearchQuery,
         ),
       );
     }
@@ -167,6 +200,7 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
           sortOption: event.sortOption,
           activeFilterCount: currentState.activeFilterCount,
           isGridView: currentState.isGridView,
+          lastSearchQuery: currentState.lastSearchQuery,
         ),
       );
     }
@@ -188,6 +222,7 @@ class RecipeListBloc extends Bloc<RecipeListEvent, RecipeListState> {
           sortOption: currentState.sortOption,
           activeFilterCount: currentState.activeFilterCount,
           isGridView: !currentState.isGridView,
+          lastSearchQuery: currentState.lastSearchQuery,
         ),
       );
     }

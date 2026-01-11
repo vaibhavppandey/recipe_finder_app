@@ -2,11 +2,12 @@ part of 'recipe_list_bloc.dart';
 
 abstract class RecipeListState extends Equatable {
   final bool isGridView;
+  final String? lastSearchQuery;
 
-  const RecipeListState({this.isGridView = true});
+  const RecipeListState({this.isGridView = true, this.lastSearchQuery});
 
   @override
-  List<Object?> get props => [isGridView];
+  List<Object?> get props => [isGridView, lastSearchQuery];
 }
 
 class RecipeListInitial extends RecipeListState {
@@ -14,7 +15,7 @@ class RecipeListInitial extends RecipeListState {
 }
 
 class RecipeListLoading extends RecipeListState {
-  const RecipeListLoading({super.isGridView});
+  const RecipeListLoading({super.isGridView, super.lastSearchQuery});
 }
 
 class RecipeListLoaded extends RecipeListState {
@@ -35,6 +36,7 @@ class RecipeListLoaded extends RecipeListState {
     this.sortOption = SortOption.nameAsc,
     this.activeFilterCount = 0,
     super.isGridView,
+    super.lastSearchQuery,
   });
 
   @override
@@ -52,7 +54,11 @@ class RecipeListLoaded extends RecipeListState {
 
 class RecipeListEmpty extends RecipeListState {
   final String message;
-  const RecipeListEmpty(this.message, {super.isGridView});
+  const RecipeListEmpty(
+    this.message, {
+    super.isGridView,
+    super.lastSearchQuery,
+  });
 
   @override
   List<Object?> get props => [message, ...super.props];
@@ -60,7 +66,11 @@ class RecipeListEmpty extends RecipeListState {
 
 class RecipeListError extends RecipeListState {
   final String message;
-  const RecipeListError(this.message, {super.isGridView});
+  const RecipeListError(
+    this.message, {
+    super.isGridView,
+    super.lastSearchQuery,
+  });
 
   @override
   List<Object?> get props => [message, ...super.props];

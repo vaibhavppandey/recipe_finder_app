@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recipe_finder_app/core/theme/colors.dart';
 import 'package:recipe_finder_app/core/theme/text_theme.dart';
@@ -58,6 +59,11 @@ AppBarTheme _buildAppBarTheme(TextTheme textTheme) {
     backgroundColor: RFColors.lightOrange,
     foregroundColor: RFColors.darkOrangeBrown,
     surfaceTintColor: Colors.transparent,
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarColor: RFColors.deepOrange,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ),
     titleTextStyle: textTheme.titleLarge?.copyWith(
       color: RFColors.darkOrangeBrown,
     ),
@@ -88,7 +94,7 @@ ChipThemeData _buildChipTheme(TextTheme textTheme) {
   return ChipThemeData(
     backgroundColor: RFColors.lightGrey,
     deleteIconColor: RFColors.darkGrey,
-    disabledColor: RFColors.nearBlack.withOpacity(0.12),
+    disabledColor: RFColors.nearBlack.withAlpha(31),
     selectedColor: RFColors.lightGreen,
     secondarySelectedColor: RFColors.lightGreen,
     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
@@ -129,7 +135,7 @@ InputDecorationTheme _buildInputDecorationTheme(TextTheme textTheme) {
     ),
     labelStyle: textTheme.bodyLarge,
     hintStyle: textTheme.bodyLarge?.copyWith(
-      color: RFColors.darkGrey.withOpacity(0.6),
+      color: RFColors.darkGrey.withAlpha(153),
     ),
     errorStyle: textTheme.bodySmall?.copyWith(color: RFColors.red),
   );

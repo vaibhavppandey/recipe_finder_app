@@ -4,11 +4,12 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recipe_finder_app/core/const/str.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
-import 'package:recipe_finder_app/presentation/widget/active_filters_chips.dart';
+import 'package:recipe_finder_app/presentation/page/favorites.dart';
+import 'package:recipe_finder_app/presentation/widget/list/active_filters_chips.dart';
 import 'package:recipe_finder_app/presentation/widget/filter/filter_bottom_sheet.dart';
-import 'package:recipe_finder_app/presentation/widget/recipe_grid_view.dart';
-import 'package:recipe_finder_app/presentation/widget/recipe_list_view.dart';
-import 'package:recipe_finder_app/presentation/widget/search_bar_widget.dart';
+import 'package:recipe_finder_app/presentation/widget/list/recipe_grid_view.dart';
+import 'package:recipe_finder_app/presentation/widget/list/recipe_list_view.dart';
+import 'package:recipe_finder_app/presentation/widget/list/search_bar_widget.dart';
 import 'package:recipe_finder_app/presentation/widget/shimmer/recipe_shimmer.dart';
 
 class RecipeListPage extends StatefulWidget {
@@ -42,6 +43,16 @@ class _RecipeListPageState extends State<RecipeListPage> {
       appBar: AppBar(
         title: const Text(StringConst.recipes),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite_border),
+            tooltip: 'Favorites',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FavoritesPage()),
+              );
+            },
+          ),
           BlocBuilder<RecipeListBloc, RecipeListState>(
             builder: (context, state) {
               if (state is! RecipeListLoaded && state is! RecipeListEmpty) {
@@ -54,10 +65,12 @@ class _RecipeListPageState extends State<RecipeListPage> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.filter_list),
+                    tooltip: 'Filter recipes',
                     onPressed: () => _showFilterBottomSheet(context),
                   ),
                   IconButton(
                     icon: Icon(state.isGridView ? Icons.list : Icons.grid_view),
+                    tooltip: state.isGridView ? 'List view' : 'Grid view',
                     onPressed: () {
                       context.read<RecipeListBloc>().add(ToggleViewModeEvent());
                     },
@@ -98,15 +111,18 @@ class _RecipeListPageState extends State<RecipeListPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               if (!isKeyboardVisible) ...[
-                                Icon(
-                                  emptyState.message ==
-                                          StringConst.searchToGetStarted
-                                      ? Icons.restaurant_menu
-                                      : Icons.search_off,
-                                  size: 80.sp,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.secondary.withOpacity(0.5),
+                                Opacity(
+                                  opacity: 0.5,
+                                  child: Icon(
+                                    emptyState.message ==
+                                            StringConst.searchToGetStarted
+                                        ? Icons.restaurant_menu
+                                        : Icons.search_off,
+                                    size: 80.sp,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary,
+                                  ),
                                 ),
                                 24.verticalSpace,
                               ],
@@ -133,14 +149,17 @@ class _RecipeListPageState extends State<RecipeListPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 if (!isKeyboardVisible) ...[
-                                  Icon(
-                                    hasFilters
-                                        ? Icons.search_off
-                                        : Icons.restaurant_menu,
-                                    size: 80.sp,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.secondary.withOpacity(0.5),
+                                  Opacity(
+                                    opacity: 0.5,
+                                    child: Icon(
+                                      hasFilters
+                                          ? Icons.search_off
+                                          : Icons.restaurant_menu,
+                                      size: 80.sp,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.secondary,
+                                    ),
                                   ),
                                   24.verticalSpace,
                                 ],
@@ -177,12 +196,15 @@ class _RecipeListPageState extends State<RecipeListPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               if (!isKeyboardVisible) ...[
-                                Icon(
-                                  Icons.restaurant_menu,
-                                  size: 80.sp,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.secondary.withOpacity(0.5),
+                                Opacity(
+                                  opacity: 0.5,
+                                  child: Icon(
+                                    Icons.restaurant_menu,
+                                    size: 80.sp,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary,
+                                  ),
                                 ),
                                 24.verticalSpace,
                               ],

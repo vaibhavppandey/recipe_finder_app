@@ -38,7 +38,7 @@ class RecipeRepo {
         _recipes = recipes;
 
         for (var recipe in recipes) {
-          await hive.cacheRecipeIfNeeded(recipe);
+          hive.cacheRecipeIfNeeded(recipe);
         }
 
         return _recipes;
@@ -68,7 +68,7 @@ class RecipeRepo {
         if (meals == null || meals.isEmpty) return null;
 
         final recipe = Recipe.fromJson(meals.first as Map<String, dynamic>);
-        await hive.cacheRecipe(recipe);
+        hive.cacheRecipe(recipe);
         return recipe;
       }
       return null;
@@ -104,7 +104,7 @@ class RecipeRepo {
             )
             .toList();
 
-        await hive.cacheCategories(categories);
+        hive.cacheCategories(categories);
         _categories = categories;
         return;
       }
@@ -141,7 +141,7 @@ class RecipeRepo {
             )
             .toList();
 
-        await hive.cacheAreas(areas);
+        hive.cacheAreas(areas);
         _areas = areas;
         return;
       }
@@ -155,9 +155,9 @@ class RecipeRepo {
     }
   }
 
-  Future<void> addToFavorites(Recipe recipe) async {
+  void addToFavorites(Recipe recipe) {
     try {
-      await hive.addToFavorites(recipe);
+      hive.addToFavorites(recipe);
       logger.d('Added recipe ${recipe.id} to favorites');
     } catch (e) {
       logger.e('Error adding to favorites', error: e);
@@ -165,9 +165,9 @@ class RecipeRepo {
     }
   }
 
-  Future<void> removeFromFavorites(String recipeId) async {
+  void removeFromFavorites(String recipeId) {
     try {
-      await hive.removeFromFavorites(recipeId);
+      hive.removeFromFavorites(recipeId);
       logger.d('Removed recipe $recipeId from favorites');
     } catch (e) {
       logger.e('Error removing from favorites', error: e);
@@ -179,9 +179,9 @@ class RecipeRepo {
     return hive.isFavorite(recipeId);
   }
 
-  Future<void> toggleFavorite(Recipe recipe) async {
+  void toggleFavorite(Recipe recipe) {
     try {
-      await hive.toggleFavorite(recipe);
+      hive.toggleFavorite(recipe);
       logger.d('Toggled favorite for recipe ${recipe.id}');
     } catch (e) {
       logger.e('Error toggling favorite', error: e);

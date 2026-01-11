@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:recipe_finder_app/core/di/injection.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_detail/recipe_detail_bloc.dart';
 import 'package:recipe_finder_app/presentation/widget/detail/fullscreen_image_view.dart';
@@ -10,48 +11,58 @@ import 'package:recipe_finder_app/presentation/widget/detail/recipe_image_header
 import 'package:recipe_finder_app/presentation/widget/detail/recipe_ingredients.dart';
 import 'package:recipe_finder_app/presentation/widget/detail/recipe_instructions.dart';
 import 'package:recipe_finder_app/presentation/widget/detail/recipe_youtube_player.dart';
+import 'package:recipe_finder_app/presentation/widget/shimmer/recipe_detail_shimmer.dart';
 
-class RecipeDetailPage extends StatelessWidget {
+class RecipeDetailPage extends StatefulWidget {
   final String recipeId;
 
   const RecipeDetailPage({super.key, required this.recipeId});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          getIt<RecipeDetailBloc>()..add(LoadRecipeDetailEvent(recipeId)),
-      child: const _RecipeDetailView(),
-    );
-  }
+  State<RecipeDetailPage> createState() => _RecipeDetailPageState();
 }
 
-class _RecipeDetailView extends StatelessWidget {
-  const _RecipeDetailView();
+class _RecipeDetailPageState extends State<RecipeDetailPage> {
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      context.read<RecipeDetailBloc>().add(
+        LoadRecipeDetailEvent(widget.recipeId),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<RecipeDetailBloc, RecipeDetailState>(
-        builder: (context, state) {
-          return switch (state) {
-            RecipeDetailLoading() => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            RecipeDetailLoaded() => _buildDetailContent(context, state),
-            RecipeDetailError() => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64.sp, color: Colors.red),
-                  16.verticalSpace,
-                  Text(state.message),
-                ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        body: BlocBuilder<RecipeDetailBloc, RecipeDetailState>(
+          builder: (context, state) {
+            return switch (state) {
+              RecipeDetailInitial() => const RecipeDetailShimmer(),
+              RecipeDetailLoading() => const RecipeDetailShimmer(),
+              RecipeDetailLoaded() => _buildDetailContent(context, state),
+              RecipeDetailError() => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64.sp, color: Colors.red),
+                    16.verticalSpace,
+                    Text(state.message),
+                  ],
+                ),
               ),
-            ),
-            _ => const SizedBox.shrink(),
-          };
-        },
+              _ => const RecipeDetailShimmer(),
+            };
+          },
+        ),
       ),
     );
   }
@@ -63,9 +74,6 @@ class _RecipeDetailView extends StatelessWidget {
       slivers: [
         RecipeImageHeader(
           recipe: recipe,
-          isFavorite: state.isFavorite,
-          onFavoritePressed: () =>
-              context.read<RecipeDetailBloc>().add(ToggleFavoriteEvent(recipe)),
           onImageTap: () => _showFullscreenImage(context, recipe),
         ),
         SliverToBoxAdapter(

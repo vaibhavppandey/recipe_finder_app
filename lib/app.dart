@@ -4,6 +4,8 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:recipe_finder_app/core/di/injection.dart';
 import 'package:recipe_finder_app/core/theme/theme.dart';
+import 'package:recipe_finder_app/presentation/bloc/fav_recipe/fav_recipe_bloc.dart';
+import 'package:recipe_finder_app/presentation/bloc/recipe_detail/recipe_detail_bloc.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
 import 'package:recipe_finder_app/presentation/page/recipe_list.dart';
 
@@ -27,6 +29,12 @@ class _RecipeFinderAppState extends State<RecipeFinderApp> {
             providers: [
               BlocProvider<RecipeListBloc>(
                 create: (context) => getIt<RecipeListBloc>(),
+              ),
+              BlocProvider<RecipeDetailBloc>(
+                create: (context) => getIt<RecipeDetailBloc>(),
+              ),
+              BlocProvider<FavRecipeBloc>(
+                create: (context) => getIt<FavRecipeBloc>(),
               ),
             ],
             child: MaterialApp(

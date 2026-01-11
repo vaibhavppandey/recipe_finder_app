@@ -1,17 +1,38 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:recipe_finder_app/core/di/injection.dart';
 import 'package:recipe_finder_app/data/model/recipe.dart';
+import 'package:recipe_finder_app/data/repo/recipe.dart';
 import 'package:recipe_finder_app/presentation/page/recipe_detail.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
-class RecipeListCard extends StatelessWidget {
+class RecipeListCard extends StatefulWidget {
   final Recipe recipe;
 
   const RecipeListCard({super.key, required this.recipe});
 
+  @override
+  State<RecipeListCard> createState() => _RecipeListCardState();
+}
+
+class _RecipeListCardState extends State<RecipeListCard> {
+  late final RecipeRepo _repo;
+  bool _isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _repo = getIt<RecipeRepo>();
+    _isFavorite = _repo.isFavorite(widget.recipe.id);
+  }
+
   void _navigateToDetail(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => RecipeDetailPage(recipeId: recipe.id)),
+      MaterialPageRoute(
+        builder: (_) => RecipeDetailPage(recipeId: widget.recipe.id),
+      ),
     );
   }
 
@@ -35,31 +56,38 @@ class RecipeListCard extends StatelessWidget {
           child: Row(
             children: [
               Hero(
-                tag: 'recipe-${recipe.id}',
+                tag: 'recipe-${widget.recipe.id}',
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.r),
-                  child: recipe.mealThumb.isNotEmpty
-                      ? Image.network(
-                          recipe.mealThumb,
+                  child: widget.recipe.mealThumb.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: widget.recipe.mealThumb,
                           width: 100.w,
                           height: 100.w,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                                width: 100.w,
-                                height: 100.w,
-                                color: colorScheme.surfaceVariant,
-                                child: Icon(
-                                  Icons.restaurant,
-                                  size: 40.sp,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
+                          placeholder: (context, url) => Shimmer(
+                            color: Colors.white,
+                            child: Container(
+                              width: 100.w,
+                              height: 100.w,
+                              color: colorScheme.surfaceContainerHighest,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            width: 100.w,
+                            height: 100.w,
+                            color: colorScheme.surfaceContainerHighest,
+                            child: Icon(
+                              Icons.restaurant,
+                              size: 40.sp,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                         )
                       : Container(
                           width: 100.w,
                           height: 100.w,
-                          color: colorScheme.surfaceVariant,
+                          color: colorScheme.surfaceContainerHighest,
                           child: Icon(
                             Icons.restaurant,
                             size: 40.sp,
@@ -75,7 +103,7 @@ class RecipeListCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      recipe.meal,
+                      widget.recipe.meal,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -93,7 +121,7 @@ class RecipeListCard extends StatelessWidget {
                         SizedBox(width: 4.w),
                         Expanded(
                           child: Text(
-                            recipe.category,
+                            widget.recipe.category,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodyMedium?.copyWith(
@@ -114,7 +142,7 @@ class RecipeListCard extends StatelessWidget {
                         SizedBox(width: 4.w),
                         Expanded(
                           child: Text(
-                            recipe.area,
+                            widget.recipe.area,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodyMedium?.copyWith(
@@ -149,9 +177,16 @@ class RecipeListCard extends StatelessWidget {
 
   Widget _buildFavoriteButton(ColorScheme colorScheme) {
     return IconButton(
-      icon: Icon(Icons.favorite_border, size: 22.sp, color: colorScheme.error),
+      icon: Icon(
+        _isFavorite ? Icons.favorite : Icons.favorite_border,
+        size: 22.sp,
+        color: colorScheme.error,
+      ),
       onPressed: () {
-        // TODO: Add to favorites
+        _repo.toggleFavorite(widget.recipe);
+        setState(() {
+          _isFavorite = _repo.isFavorite(widget.recipe.id);
+        });
       },
       padding: EdgeInsets.zero,
       constraints: BoxConstraints(minWidth: 40.w, minHeight: 40.w),

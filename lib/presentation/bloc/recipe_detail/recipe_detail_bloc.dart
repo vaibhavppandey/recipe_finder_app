@@ -21,6 +21,10 @@ class RecipeDetailBloc extends Bloc<RecipeDetailEvent, RecipeDetailState> {
     emit(const RecipeDetailLoading());
 
     try {
+      // Ensure shimmer is visible for at least a short duration
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      repo.logger.d('API call for meal ID: ${event.recipeId}');
       final recipe = await repo.getMealById(event.recipeId);
 
       if (recipe == null) {
@@ -29,7 +33,6 @@ class RecipeDetailBloc extends Bloc<RecipeDetailEvent, RecipeDetailState> {
       }
 
       final isFavorite = repo.hive.isFavorite(recipe.id);
-
       emit(RecipeDetailLoaded(recipe: recipe, isFavorite: isFavorite));
     } catch (e) {
       emit(RecipeDetailError('Failed to load recipe: ${e.toString()}'));
@@ -45,7 +48,7 @@ class RecipeDetailBloc extends Bloc<RecipeDetailEvent, RecipeDetailState> {
     final currentState = state as RecipeDetailLoaded;
 
     try {
-      await repo.hive.toggleFavorite(event.recipe);
+      repo.hive.toggleFavorite(event.recipe);
       final isFavorite = repo.hive.isFavorite(event.recipe.id);
 
       emit(

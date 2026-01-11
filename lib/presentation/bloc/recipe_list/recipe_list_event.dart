@@ -50,3 +50,7 @@ class SortRecipesEvent extends RecipeListEvent {
 class ToggleViewModeEvent extends RecipeListEvent {
   const ToggleViewModeEvent();
 }
+
+class RefreshSearchEvent extends RecipeListEvent {
+  const RefreshSearchEvent();
+}

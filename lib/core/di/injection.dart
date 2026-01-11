@@ -8,6 +8,7 @@ import 'package:recipe_finder_app/core/const/local.dart';
 import 'package:recipe_finder_app/data/repo/recipe.dart';
 import 'package:recipe_finder_app/data/source/local/hive.dart';
 import 'package:recipe_finder_app/data/source/remote/api.dart';
+import 'package:recipe_finder_app/presentation/bloc/fav_recipe/fav_recipe_bloc.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_detail/recipe_detail_bloc.dart';
 import 'package:recipe_finder_app/presentation/bloc/recipe_list/recipe_list_bloc.dart';
 
@@ -74,5 +75,9 @@ Future<void> setupDI() async {
 
   getIt.registerFactory<RecipeDetailBloc>(
     () => RecipeDetailBloc(repo: getIt<RecipeRepo>()),
+  );
+
+  getIt.registerFactory<FavRecipeBloc>(
+    () => FavRecipeBloc(getIt<RecipeRepo>()),
   );
 }

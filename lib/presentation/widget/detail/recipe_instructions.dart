@@ -11,6 +11,19 @@ class RecipeInstructions extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    if (instructions.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final steps = instructions.split('\n').where((step) {
+      final trimmedStep = step.trim();
+      return trimmedStep.isNotEmpty && !RegExp(r'^\d+$').hasMatch(trimmedStep);
+    }).toList();
+
+    if (steps.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -21,7 +34,46 @@ class RecipeInstructions extends StatelessWidget {
           ),
         ),
         12.verticalSpace,
-        Text(instructions, style: theme.textTheme.bodyMedium),
+        ...steps.asMap().entries.map((entry) {
+          final index = entry.key + 1;
+          var step = entry.value.trim();
+
+          step = step.replaceFirst(
+            RegExp(r'^step\s+\d+[:\s]*', caseSensitive: false),
+            '',
+          );
+
+          if (step.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return Padding(
+            padding: REdgeInsets.only(bottom: 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 24.w,
+                  height: 24.w,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '$index',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                12.horizontalSpace,
+                Expanded(child: Text(step, style: theme.textTheme.bodyMedium)),
+              ],
+            ),
+          );
+        }),
       ],
     );
   }
