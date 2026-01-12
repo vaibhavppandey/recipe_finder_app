@@ -178,10 +178,24 @@ recipe_finder_app/
         └── recipe_card_test.dart
 ```
 
-## Setup Instructions
+### Configuration Files
+```
+recipe_finder_app/
+├── .fvmrc                          # Flutter Version Management config
+├── analysis_options.yaml           # Dart/Flutter analysis options
+├── pubspec.yaml                    # Flutter project dependencies
+├── LICENSE                         # MIT License
+├── README.md                       # Project documentation
+├── .github/
+│   └── workflows/
+│       └── build-apk.yaml         # CI/CD pipeline
+└── android/                        # Android platform code
+    └── ...                         # (standard Flutter Android setup)
+```
 
 ### Prerequisites
-- **Flutter**: 3.38.3 or higher
+- **Flutter Version Management (FVM)**: For managing Flutter versions
+- **Flutter**: 3.38.3 or higher (managed via FVM)
 - **Dart**: 3.6.2 or higher
 - **IDE**: VS Code, Android Studio, or IntelliJ IDEA
 - **Device**: Android emulator/device or iOS simulator/device
@@ -194,22 +208,38 @@ git clone https://github.com/vaibhavppandey/recipe_finder_app.git
 cd recipe_finder_app
 ```
 
-2. **Install dependencies**
+2. **Setup Flutter Version (using FVM)**
+```bash
+# Install Flutter Version Management (FVM)
+dart pub global activate fvm
+
+# Install the required Flutter version
+fvm install
+
+# Use the Flutter version specified in .fvmrc
+fvm use
+```
+
+3. **Install dependencies**
 ```bash
 flutter pub get
+# or if using FVM: fvm flutter pub get
 ```
 
 3. **Run the app**
 ```bash
 # For Android
 flutter run
+# or: fvm flutter run
 
 # For iOS (macOS only)
 flutter run -d ios
+# or: fvm flutter run -d ios
 
 # For a specific device
 flutter devices
 flutter run -d <device-id>
+# or: fvm flutter run -d <device-id>
 ```
 
 ### API Configuration
@@ -225,9 +255,11 @@ The app uses the **free TheMealDB API** - no API key required!
 ```bash
 # Run in debug mode
 flutter run
+# or: fvm flutter run
 
 # Run with specific flavor (if configured)
 flutter run --debug
+# or: fvm flutter run --debug
 
 # Hot reload enabled by default (press 'r')
 # Hot restart (press 'R')
@@ -237,9 +269,11 @@ flutter run --debug
 ```bash
 # Build release APK
 flutter build apk --release
+# or: fvm flutter build apk --release
 
 # Build split APKs by ABI (smaller size)
 flutter build apk --split-per-abi
+# or: fvm flutter build apk --split-per-abi
 
 # Output location
 # build/app/outputs/flutter-apk/app-release.apk
@@ -249,6 +283,7 @@ flutter build apk --split-per-abi
 ```bash
 # Build iOS app
 flutter build ios --release
+# or: fvm flutter build ios --release
 ```
 
 ## Testing
@@ -258,18 +293,23 @@ flutter build ios --release
 ```bash
 # Run all tests
 flutter test
+# or: fvm flutter test
 
 # Run tests with coverage
 flutter test --coverage
+# or: fvm flutter test --coverage
 
 # Run specific test file
 flutter test test/unit/bloc/recipe_list_bloc_test.dart
+# or: fvm flutter test test/unit/bloc/recipe_list_bloc_test.dart
 
 # Run tests in a specific directory
 flutter test test/unit/
+# or: fvm flutter test test/unit/
 
 # Run widget tests only
 flutter test test/widget/
+# or: fvm flutter test test/widget/
 ```
 
 ### Test Coverage

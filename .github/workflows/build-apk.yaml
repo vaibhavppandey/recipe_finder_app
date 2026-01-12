@@ -104,8 +104,8 @@ jobs:
           APK_PATH="build/app/outputs/flutter-apk/app-release.apk"
           if [ -f "$APK_PATH" ]; then
             echo "Found APK at $APK_PATH"
-            cp "$APK_PATH" release/boozin.apk
-            echo "APK copied to release/boozin.apk"
+            cp "$APK_PATH" release/recipefinder.apk
+            echo "APK copied to release/recipefinder.apk"
           else
             echo "APK not found at expected path: $APK_PATH"
             echo "Listing build/app/outputs/flutter-apk for debugging:"
@@ -128,7 +128,7 @@ jobs:
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: boozin-apk-${{ github.run_number }}
+          name: recipe-finder-apk-${{ github.run_number }}
           path: release/
           retention-days: 30
 
@@ -137,7 +137,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release/boozin.apk
+            release/recipefinder.apk
             release/build-info.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
